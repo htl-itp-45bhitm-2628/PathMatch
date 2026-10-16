@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PathMatch Click-Dummy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sansation:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Icon-Sprite -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+    <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 16l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  </defs>
+</svg>
+
+<!-- ============ STARTSEITE ============ -->
+<div id="shell-start">
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="logo" href="#start" data-go="start" aria-label="PathMatch Startseite">
+        <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#A8C7FA"/><path d="M13 34.5c4.6 0 6.6-2.6 8.7-6.6 2.2-4.3 4.2-8.4 7.6-9.6" fill="none" stroke="#244B68" stroke-width="3.6" stroke-linecap="round"/><circle cx="32.6" cy="16.2" r="3.9" fill="none" stroke="#244B68" stroke-width="3.4"/></svg>
+        <span class="logo-word">Path<b>Match</b></span>
+      </a>
+      <div class="header-actions">
+        <button type="button" class="btn btn-ghost" data-open-login>Anmelden</button>
+        <button type="button" class="btn btn-primary" data-go="signup1">Konto erstellen</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Für Schülerinnen und Schüler in Österreich</p>
+        <h1 class="display" tabindex="-1">Finde deinen nächsten <em>Schritt</em> nach der Schule.</h1>
+        <p class="lead">Gib an, was du kannst und was dich interessiert. PathMatch zeigt dir passende Studien, Lehrstellen, Praktika und Jobs und erklärt dir, warum sie zu dir passen.</p>
+        <div class="hero-cta">
+          <button type="button" class="btn btn-primary btn-lg" data-go="signup1">Jetzt starten <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
+          <button type="button" class="btn btn-link" data-open-login>Ich habe schon ein Konto</button>
+        </div>
+        <p class="hero-note"><svg class="i"><use href="#i-clock"/></svg> Dauert etwa 5 Minuten. Du entscheidest, was du angibst.</p>
+      </div>
+
+      <div class="hero-visual" role="group" aria-label="Beispiel: So sehen deine Ergebnisse aus">
+        <div>
+          <div class="hv-profile">
+            <span class="avatar">LH</span>
+            <div class="hv-profile-text">
+              <strong>Lena, 18</strong>
+              <span>HTL Leonding · Informatik · 5. Jahrgang</span>
+            </div>
+          </div>
+          <div class="hv-skills">
+            <span class="pill">Java 8/10</span>
+            <span class="pill">Python 6/10</span>
+            <span class="pill">Spieleentwicklung</span>
+          </div>
+        </div>
+        <div class="hv-connector">Deine Top-Matches</div>
+        <ul class="hv-list">
+          <li class="hv-item">
+            <div class="ring ring--sm" role="img" aria-label="94 Prozent"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="ring-track" cx="32" cy="32" r="28"/><circle class="ring-bar" cx="32" cy="32" r="28" stroke-dasharray="165.4 175.9"/></svg><span class="ring-value" aria-hidden="true">94<small>%</small></span></div>
+            <div class="hv-item-text"><strong>Software Engineering</strong><span>FH OÖ · Hagenberg</span></div>
+            <span class="tag"><svg class="i"><use href="#i-cap"/></svg>Studium</span>
+          </li>
+          <li class="hv-item">
+            <div class="ring ring--sm" role="img" aria-label="89 Prozent"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="ring-track" cx="32" cy="32" r="28"/><circle class="ring-bar" cx="32" cy="32" r="28" stroke-dasharray="156.6 175.9"/></svg><span class="ring-value" aria-hidden="true">89<small>%</small></span></div>
+            <div class="hv-item-text"><strong>Artificial Intelligence</strong><span>JKU · Linz</span></div>
+            <span class="tag"><svg class="i"><use href="#i-cap"/></svg>Studium</span>
+          </li>
+          <li class="hv-item">
+            <div class="ring ring--sm" role="img" aria-label="84 Prozent"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="ring-track" cx="32" cy="32" r="28"/><circle class="ring-bar" cx="32" cy="32" r="28" stroke-dasharray="147.8 175.9"/></svg><span class="ring-value" aria-hidden="true">84<small>%</small></span></div>
+            <div class="hv-item-text"><strong>Praktikum Backend-Entwicklung</strong><span>Nordlicht Software · Linz</span></div>
+            <span class="tag"><svg class="i"><use href="#i-clock"/></svg>Praktikum</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="how">
+      <div class="wrap">
+        <div class="how-head">
+          <p class="eyebrow">So funktioniert's</p>
+          <h2 class="h2">In drei Schritten zu deinen <em>Matches</em>.</h2>
+        </div>
+        <ol class="steps">
+          <li class="step-card">
+            <span class="step-num">1</span>
+            <h3 class="h3">Profil anlegen</h3>
+            <p>Gib deine Schule, deinen Zweig, deine Schulstufe und deinen Jahrgang an.</p>
+          </li>
+          <li class="step-card">
+            <span class="step-num">2</span>
+            <h3 class="h3">Kenntnisse und Interessen</h3>
+            <p>Bewerte deine Skills mit Reglern von 1 bis 10 und beschreib in eigenen Worten, was dich sonst noch interessiert.</p>
+          </li>
+          <li class="step-card">
+            <span class="step-num">3</span>
+            <h3 class="h3">Passende Ergebnisse</h3>
+            <p>Sieh dir deine Vorschläge an, merk dir die besten als Favoriten und ordne sie in Kategorien.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <span>PathMatch Click-Dummy · Alle Inhalte sind Beispieldaten.</span>
+      <span>Projektteam: Laurent Mc Neall, David Lachner, Julian Forster</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ REGISTRIERUNG ============ -->
+<div id="shell-signup" class="signup-shell" hidden>
+  <aside class="signup-rail">
+    <a class="logo logo--inverse" href="#start" data-go="start" aria-label="PathMatch Startseite">
+      <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#A8C7FA"/><path d="M13 34.5c4.6 0 6.6-2.6 8.7-6.6 2.2-4.3 4.2-8.4 7.6-9.6" fill="none" stroke="#244B68" stroke-width="3.6" stroke-linecap="round"/><circle cx="32.6" cy="16.2" r="3.9" fill="none" stroke="#244B68" stroke-width="3.4"/></svg>
+      <span class="logo-word">Path<b>Match</b></span>
+    </a>
+    <ol class="stepper" id="stepper" aria-label="Fortschritt der Registrierung">
+      <li data-for="signup1">
+        <span class="step-dot">1</span>
+        <span class="step-text"><span class="step-name">Über dich</span><span class="step-desc">Konto, Abschluss, Schule</span></span>
+      </li>
+      <li data-for="signup2">
+        <span class="step-dot">2</span>
+        <span class="step-text"><span class="step-name">Nach der Schule</span><span class="step-desc">Studieren, arbeiten oder offen</span></span>
+      </li>
+      <li data-for="signup3">
+        <span class="step-dot">3</span>
+        <span class="step-text"><span class="step-name">Kenntnisse und Interessen</span><span class="step-desc">Skills bewerten, Interessen beschreiben</span></span>
+      </li>
+    </ol>
+    <p class="rail-note"><svg class="i"><use href="#i-lock"/></svg><span>Du entscheidest, was du angibst. Deine Angaben kannst du später jederzeit ändern.</span></p>
+  </aside>
+
+  <main class="signup-main">
+    <!-- Schritt 1 -->
+    <form id="form-step1" class="signup-form" data-step="signup1" novalidate>
+      <div class="form-head">
+        <p class="eyebrow">Schritt 1 von 3</p>
+        <h1 class="h1" tabindex="-1">Erzähl uns von <em>dir</em>.</h1>
+        <p class="sub">Damit legen wir dein Konto an und wissen, wo du gerade stehst.</p>
+      </div>
+
+      <fieldset class="fieldset">
+        <legend class="legend">Dein Konto</legend>
+        <div class="grid-2">
+          <div class="field">
+            <label class="label" for="f-email">E-Mail<span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-email" type="email" autocomplete="email" value="lena.hofer@example.com" data-required aria-required="true">
+            <p class="error" id="f-email-err" hidden></p>
+          </div>
+          <div class="field">
+            <label class="label" for="f-password">Passwort<span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-password" type="password" autocomplete="new-password" value="pathmatch2026" data-required aria-required="true" aria-describedby="f-password-hint">
+            <p class="hint" id="f-password-hint">Mindestens 8 Zeichen</p>
+            <p class="error" id="f-password-err" hidden></p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="label" for="f-first">Vorname<span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-first" type="text" autocomplete="given-name" value="Lena" data-required aria-required="true">
+            <p class="error" id="f-first-err" hidden></p>
+          </div>
+          <div class="field">
+            <label class="label" for="f-last">Nachname<span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="f-last" type="text" autocomplete="family-name" value="Hofer" data-required aria-required="true">
+            <p class="error" id="f-last-err" hidden></p>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="legend">Abschluss</legend>
+        <label class="check"><input type="checkbox" id="f-compulsory" checked> Pflichtschule abgeschlossen</label>
+        <div class="field reveal" id="f-degree-wrap">
+          <label class="label" for="f-degree">Höchster Abschluss</label>
+          <select class="input select" id="f-degree">
+            <option>Pflichtschulabschluss</option>
+            <option>Lehrabschluss</option>
+            <option>Reifeprüfung (Matura)</option>
+            <option>Berufsreifeprüfung</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <legend class="legend">Deine aktuelle Schule</legend>
+        <div class="field">
+          <label class="label" for="f-school">Welche Schule besuchst du gerade?<span class="req" aria-hidden="true">*</span></label>
+          <select class="input select" id="f-school" data-required aria-required="true">
+            <option value="">Schule auswählen</option>
+            <option selected>HTL Leonding</option>
+            <option>HTL Linz Paul-Hahn-Straße</option>
+            <option>HTL Linz Goethestraße</option>
+            <option>BG/BRG Linz Khevenhüllerstraße</option>
+            <option>BORG Linz</option>
+            <option>Andere Schule</option>
+          </select>
+          <p class="error" id="f-school-err" hidden></p>
+        </div>
+        <div class="grid-3">
+          <div class="field">
+            <label class="label" for="f-branch">Zweig</label>
+            <select class="input select" id="f-branch">
+              <option selected>Informatik</option>
+              <option>Medientechnik</option>
+              <option>Medizintechnik</option>
+              <option>Elektronik</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="f-level">Schulstufe</label>
+            <select class="input select" id="f-level">
+              <option>9. Schulstufe</option>
+              <option>10. Schulstufe</option>
+              <option>11. Schulstufe</option>
+              <option>12. Schulstufe</option>
+              <option selected>13. Schulstufe</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="f-year">Schuljahr</label>
+            <select class="input select" id="f-year">
+              <option>1. Jahrgang</option>
+              <option>2. Jahrgang</option>
+              <option>3. Jahrgang</option>
+              <option>4. Jahrgang</option>
+              <option selected>5. Jahrgang</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+      <p class="req-note"><span aria-hidden="true">*</span> Pflichtfeld</p>
+
+      <div class="form-foot">
+        <button type="button" class="btn btn-link" data-go="start">Zurück</button>
+        <button type="submit" class="btn btn-primary btn-lg">Weiter <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
+      </div>
+    </form>
+
+    <!-- Schritt 2 -->
+    <form id="form-step2" class="signup-form" data-step="signup2" novalidate hidden>
+      <div class="form-head">
+        <p class="eyebrow">Schritt 2 von 3</p>
+        <h1 class="h1" tabindex="-1">Was möchtest du <em>nach der Schule</em> machen?</h1>
+        <p class="sub">Wähle aus, was am ehesten passt. Wenn du dir noch nicht sicher bist, ist das völlig in Ordnung.</p>
+      </div>
+
+      <fieldset class="fieldset">
+        <legend class="sr-only">Dein Ziel nach der Schule</legend>
+        <div class="choices">
+          <label class="choice">
+            <input type="radio" name="goal" value="study">
+            <span class="choice-check"><svg class="i"><use href="#i-check"/></svg></span>
+            <span class="choice-icon"><svg class="i"><use href="#i-cap"/></svg></span>
+            <span class="choice-title">Studieren</span>
+            <span class="choice-text">An einer Uni oder Fachhochschule</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="goal" value="work">
+            <span class="choice-check"><svg class="i"><use href="#i-check"/></svg></span>
+            <span class="choice-icon"><svg class="i"><use href="#i-briefcase"/></svg></span>
+            <span class="choice-title">Arbeiten</span>
+            <span class="choice-text">Lehre, Praktikum oder direkt in einen Job</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="goal" value="open" checked>
+            <span class="choice-check"><svg class="i"><use href="#i-check"/></svg></span>
+            <span class="choice-icon"><svg class="i"><use href="#i-compass"/></svg></span>
+            <span class="choice-title">Ich weiß es noch nicht</span>
+            <span class="choice-text">Zeig mir Studien und Jobs</span>
+          </label>
+        </div>
+      </fieldset>
+      <p class="info-line"><svg class="i"><use href="#i-info"/></svg><span>Deine Wahl legt fest, welche Angebote wir dir zuerst zeigen. In den Ergebnissen kannst du jederzeit alle Arten ansehen.</span></p>
+
+      <div class="form-foot">
+        <button type="button" class="btn btn-link" data-go="signup1">Zurück</button>
+        <button type="submit" class="btn btn-primary btn-lg">Weiter <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
+      </div>
+    </form>
+
+    <!-- Schritt 3 -->
+    <form id="form-step3" class="signup-form signup-form--wide" data-step="signup3" novalidate hidden>
+      <div class="form-head">
+        <p class="eyebrow">Schritt 3 von 3</p>
+        <h1 class="h1" tabindex="-1">Was sind deine <em>Interessen</em> und Kenntnisse?</h1>
+        <p class="sub">Wähle ein Themengebiet und markiere, womit du schon gearbeitet hast. Du kannst mehrere Themengebiete durchgehen.</p>
+      </div>
+
+      <div class="topic-row">
+        <label class="label" for="f-topic">Themengebiet</label>
+        <select class="pill-select" id="f-topic"></select>
+      </div>
+
+      <div class="skills">
+        <div class="panel panel--mist">
+          <p class="panel-q" id="topic-question">Mit welchen Programmiersprachen hast du bereits gearbeitet?</p>
+          <div class="chips" id="chips" role="group" aria-labelledby="topic-question"></div>
+        </div>
+        <div class="panel panel--line">
+          <p class="panel-q" id="scale-hint">Wie gut sind deine Skills? <span>Von 1 (Einsteiger) bis 10 (Profi)</span></p>
+          <div class="ratings" id="ratings"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-interests">Was interessiert dich sonst noch?</label>
+        <textarea class="input" id="f-interests" maxlength="600" placeholder="z. B. Ich baue gern kleine Spiele, interessiere mich für Datenschutz und würde gern im Ausland studieren.">Ich programmiere in meiner Freizeit kleine Spiele in Java und interessiere mich für künstliche Intelligenz. Ein Auslandssemester würde mich reizen.</textarea>
+        <div class="field-foot">
+          <p class="ai-note"><svg class="i"><use href="#i-spark"/></svg><span>Diesen Text wertet später eine KI aus, um noch passendere Vorschläge zu finden. Die Angabe ist freiwillig.</span></p>
+          <span class="counter" id="interests-count" aria-live="polite">0/600</span>
+        </div>
+      </div>
+
+      <div class="form-foot">
+        <button type="button" class="btn btn-link" id="step3-back" data-go="signup2">Zurück</button>
+        <button type="submit" class="btn btn-primary btn-lg"><span id="step3-submit-label">Ergebnisse anzeigen</span> <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<!-- ============ MATCHING ============ -->
+<div id="shell-matching" class="matching" hidden>
+  <div class="wrap">
+    <div class="matching-card" role="status">
+      <svg class="matching-art" viewBox="0 0 260 130" aria-hidden="true">
+        <path class="ma-track" d="M20 110 C 80 110, 90 60, 130 60 S 190 20, 236 20"/>
+        <path class="ma-line" d="M20 110 C 80 110, 90 60, 130 60 S 190 20, 236 20"/>
+        <circle class="ma-start" cx="20" cy="110" r="7"/>
+        <circle class="ma-end" cx="236" cy="20" r="10"/>
+      </svg>
+      <h1 class="h1" tabindex="-1">Wir suchen deine <em>Matches</em>, <span data-firstname>Lena</span>.</h1>
+      <ol class="matching-steps" id="matching-steps">
+        <li><span class="ms-dot"><svg class="i"><use href="#i-check"/></svg></span>Kenntnisse und Bewertungen auswerten</li>
+        <li><span class="ms-dot"><svg class="i"><use href="#i-check"/></svg></span>Deinen Interessen-Text lesen</li>
+        <li><span class="ms-dot"><svg class="i"><use href="#i-check"/></svg></span>Studien, Lehrstellen und Jobs vergleichen</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ============ APP (nach dem Login) ============ -->
+<div id="shell-app" hidden>
+  <header class="site-header app-header">
+    <div class="wrap header-row">
+      <a class="logo" href="#results" data-go="results" aria-label="PathMatch, zu den Ergebnissen">
+        <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#A8C7FA"/><path d="M13 34.5c4.6 0 6.6-2.6 8.7-6.6 2.2-4.3 4.2-8.4 7.6-9.6" fill="none" stroke="#244B68" stroke-width="3.6" stroke-linecap="round"/><circle cx="32.6" cy="16.2" r="3.9" fill="none" stroke="#244B68" stroke-width="3.4"/></svg>
+        <span class="logo-word">Path<b>Match</b></span>
+      </a>
+      <nav class="app-nav" aria-label="Hauptnavigation">
+        <button type="button" class="nav-btn" data-go="results" data-nav="results"><svg class="i"><use href="#i-list"/></svg>Ergebnisse</button>
+        <button type="button" class="nav-btn" data-go="favorites" data-nav="favorites"><svg class="i"><use href="#i-heart"/></svg>Favoriten <span class="badge" id="fav-badge">0</span></button>
+      </nav>
+      <div class="user">
+        <div class="user-name"><strong id="user-fullname">Lena Hofer</strong><span id="user-school">HTL Leonding</span></div>
+        <span class="avatar" id="user-avatar" aria-hidden="true">LH</span>
+        <button type="button" class="icon-btn" id="logout" aria-label="Abmelden" title="Abmelden"><svg class="i"><use href="#i-logout"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Ergebnisse -->
+    <section data-view="results">
+      <div class="wrap page-head">
+        <div class="page-title">
+          <p class="eyebrow">Ergebnisse</p>
+          <h1 class="h1" tabindex="-1">Deine <em>Matches</em>, <span data-firstname>Lena</span>.</h1>
+          <p class="sub" id="results-sub">Vorschläge auf Basis deiner Angaben</p>
+        </div>
+        <div class="profile-card">
+          <div class="profile-card-head">
+            <span class="label-sm">Berechnet aus deinen Angaben</span>
+            <button type="button" class="btn btn-link" id="edit-profile">Angaben ändern</button>
+          </div>
+          <div class="mini-chips" id="profile-chips"></div>
+        </div>
+      </div>
+
+      <div class="wrap results-layout">
+        <aside class="filters" aria-label="Filter">
+          <fieldset class="filter-group">
+            <legend class="filter-title">Fachbereich</legend>
+            <div id="field-filters" class="filter-group"></div>
+          </fieldset>
+          <div class="filter-group">
+            <label class="filter-title" for="f-dist">Entfernung von deiner Schule</label>
+            <select class="input select select--sm" id="f-dist">
+              <option value="all">Ganz Österreich</option>
+              <option value="10">bis 10 km</option>
+              <option value="35">bis 35 km</option>
+              <option value="100">bis 100 km</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" id="reset-filters">Filter zurücksetzen</button>
+        </aside>
+
+        <div class="results-main">
+          <div class="toolbar">
+            <div class="search">
+              <label class="sr-only" for="f-search">Angebote durchsuchen</label>
+              <svg class="i"><use href="#i-search"/></svg>
+              <input class="input" id="f-search" type="search" placeholder="Nach Beruf, Studium oder Stichwort suchen" autocomplete="off">
+            </div>
+            <div class="sort">
+              <label class="label" for="f-sort">Sortieren</label>
+              <select class="input select" id="f-sort">
+                <option value="match">Beste Übereinstimmung</option>
+                <option value="dist">Entfernung</option>
+                <option value="updated">Zuletzt aktualisiert</option>
+              </select>
+            </div>
+          </div>
+          <div class="tabs" id="type-tabs" role="group" aria-label="Art des Angebots"></div>
+          <ul class="offer-list" id="offer-list"></ul>
+          <div class="empty" id="results-empty" hidden>
+            <span class="empty-icon"><svg class="i"><use href="#i-search"/></svg></span>
+            <h2 class="h3">Keine Treffer mit diesen Filtern</h2>
+            <p>Versuch es mit weniger Einschränkungen oder einem anderen Suchbegriff.</p>
+            <button type="button" class="btn btn-secondary" data-reset-filters>Filter zurücksetzen</button>
+          </div>
+          <p class="disclaimer"><svg class="i"><use href="#i-info"/></svg><span>Ein Match ist eine Empfehlung auf Basis deiner Angaben. Er ist keine Zusage für einen Ausbildungs- oder Studienplatz.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Favoriten -->
+    <section data-view="favorites" hidden>
+      <div class="wrap favorites-wrap">
+        <div class="page-head">
+          <div class="page-title">
+            <p class="eyebrow">Favoriten</p>
+            <h1 class="h1" tabindex="-1">Deine <em>Favoriten</em>.</h1>
+            <p class="sub">Ordne gespeicherte Angebote in Kategorien, damit du beim Bewerben den Überblick behältst.</p>
+          </div>
+        </div>
+        <div class="cat-bar">
+          <div class="tabs" id="cat-tabs" role="group" aria-label="Kategorien"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="new-cat"><svg class="i"><use href="#i-plus"/></svg>Neue Kategorie</button>
+        </div>
+        <div class="fav-grid" id="fav-grid"></div>
+        <div class="empty" id="fav-empty" hidden>
+          <span class="empty-icon"><svg class="i"><use href="#i-heart"/></svg></span>
+          <h2 class="h3" id="fav-empty-title">Hier ist noch nichts</h2>
+          <p id="fav-empty-text">Markiere Vorschläge auf der Ergebnisseite mit dem Herz.</p>
+          <button type="button" class="btn btn-secondary" data-go="results">Zu den Ergebnissen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <span>PathMatch Click-Dummy · Alle Inhalte sind Beispieldaten.</span>
+      <span>Projektteam: Laurent Mc Neall, David Lachner, Julian Forster</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ MODALS ============ -->
+<div class="modal" id="modal-login" hidden role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="modal-card">
+    <button type="button" class="icon-btn icon-btn--plain modal-close" data-close aria-label="Schließen"><svg class="i"><use href="#i-x"/></svg></button>
+    <div id="login-view">
+      <form class="modal-form" id="form-login" novalidate>
+        <svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="24" fill="#A8C7FA"/><path d="M13 34.5c4.6 0 6.6-2.6 8.7-6.6 2.2-4.3 4.2-8.4 7.6-9.6" fill="none" stroke="#244B68" stroke-width="3.6" stroke-linecap="round"/><circle cx="32.6" cy="16.2" r="3.9" fill="none" stroke="#244B68" stroke-width="3.4"/></svg>
+        <h2 class="h2" id="login-title">Willkommen <em>zurück</em>.</h2>
+        <div class="field">
+          <label class="label" for="l-email">E-Mail</label>
+          <input class="input" id="l-email" type="email" autocomplete="email" value="lena.hofer@example.com">
+        </div>
+        <div class="field">
+          <div class="row-between">
+            <label class="label" for="l-password">Passwort</label>
+            <button type="button" class="btn btn-link" id="to-reset">Passwort vergessen?</button>
+          </div>
+          <input class="input" id="l-password" type="password" autocomplete="current-password" value="pathmatch2026">
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg">Anmelden</button>
+        <p class="modal-alt">Noch kein Konto? <button type="button" class="btn btn-link" data-close data-go="signup1">Konto erstellen</button></p>
+      </form>
+    </div>
+    <div id="reset-view" hidden>
+      <form class="modal-form" id="form-reset" novalidate>
+        <h2 class="h2">Passwort <em>zurücksetzen</em>.</h2>
+        <p class="sub">Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link, mit dem du ein neues Passwort festlegst.</p>
+        <div class="field">
+          <label class="label" for="r-email">E-Mail</label>
+          <input class="input" id="r-email" type="email" autocomplete="email" value="lena.hofer@example.com">
+        </div>
+        <p class="success" id="reset-done" hidden><svg class="i"><use href="#i-check"/></svg><span>Wenn es ein Konto mit dieser Adresse gibt, bekommst du gleich eine E-Mail mit dem Link.</span></p>
+        <button type="submit" class="btn btn-primary btn-lg" id="reset-submit">Link senden</button>
+        <p class="modal-alt"><button type="button" class="btn btn-link" id="to-login">Zurück zur Anmeldung</button></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-category" hidden role="dialog" aria-modal="true" aria-labelledby="cat-title">
+  <div class="modal-card">
+    <button type="button" class="icon-btn icon-btn--plain modal-close" data-close aria-label="Schließen"><svg class="i"><use href="#i-x"/></svg></button>
+    <form class="modal-form" id="form-category" novalidate>
+      <h2 class="h2" id="cat-title">Neue <em>Kategorie</em>.</h2>
+      <div class="field" id="cat-field">
+        <label class="label" for="c-name">Name der Kategorie</label>
+        <input class="input" id="c-name" type="text" maxlength="24" placeholder="z. B. Bewerbung bis Jänner" autocomplete="off">
+        <p class="error" id="c-name-err" hidden></p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" data-close>Abbrechen</button>
+        <button type="submit" class="btn btn-primary">Erstellen</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="modal-remove" hidden role="dialog" aria-modal="true" aria-labelledby="remove-title">
+  <div class="modal-card">
+    <h2 class="h2" id="remove-title">Aus Favoriten entfernen?</h2>
+    <p class="sub" id="remove-text"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" data-close>Abbrechen</button>
+      <button type="button" class="btn btn-danger" id="remove-confirm">Entfernen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="i"><use href="#i-check"/></svg><span id="toast-text"></span></div>
+
+<script src="script.js"></script>
+</body>
+</html>

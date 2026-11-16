@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PathMatch – Schulverzeichnis (BEISPIELDATEN)
+
+  Diese Datei ersetzt später die Dummy-Schulen: einfach die <Schuldaten>-Blöcke austauschen.
+  Der Prototyp liest die Datei beim Start ein (script.js, Abschnitt "Schulen").
+
+  Pflichtfelder pro Schule:  SKZ (eindeutig), Schule, Schultyp
+  Alle anderen Felder sind optional und werden nur angezeigt, wenn sie befüllt sind.
+  Die Felder zur Schulleitung (Amtstitel bis AkadTitel2) liest der Prototyp nicht ein.
+
+  Optional pro Schule: <Zweige> mit beliebig vielen <Zweig>-Einträgen.
+    <Bezeichnung>     Name des Zweigs (Pflicht)
+    <SchulstufeVon>   erste Schulstufe, die es in diesem Zweig gibt (optional)
+    <SchulstufeBis>   letzte Schulstufe in diesem Zweig (optional)
+                      Fehlen die beiden Angaben, nimmt der Prototyp einen Standard je Schultyp
+                      (z. B. HTL und HAK 9 bis 13, AHS 5 bis 12, Mittelschule 5 bis 8).
+    <Themengebiete>   vorgeschlagene Themengebiete für die Kenntnisse (optional), je ein <Themengebiet>:
+                        prog   = Programmieren
+                        design = Design und Medien
+                        tech   = Elektronik und Technik
+                        biz    = Wirtschaft
+                        sci    = Naturwissenschaften
+                        lang   = Sprachen
+                      Das erste Themengebiet ist beim Auswählen der Kenntnisse vorausgewählt.
+  Hat eine Schule keinen <Zweige>-Block (z. B. die echten Daten ohne Zweige), funktioniert die Auswahl
+  trotzdem: das Feld Zweig bleibt dann leer und die Schulstufen kommen aus dem Standard des Schultyps.
+
+  Sonderzeichen in Texten in XML schreiben: &amp; für &, &lt; für <.
+  Alle Namen, Adressen und Kontaktdaten unten sind erfunden (Adressen unter .example gibt es nicht).
+-->
+<Schulen>
+
+  <Schuldaten>
+    <SKZ>401901</SKZ>
+    <Schule>HTL Leonding</Schule>
+    <Straße>Beispielstraße 12</Straße>
+    <PLZ>4060</PLZ>
+    <Ort>Leonding</Ort>
+    <Telefon>0732 000 001</Telefon>
+    <Fax>0732 000 002</Fax>
+    <E-Mail>office@htl-leonding.example</E-Mail>
+    <Webseite>https://www.htl-leonding.example/</Webseite>
+    <Amtstitel>Direktor</Amtstitel>
+    <Anrede>Herr</Anrede>
+    <Nachname>Mustermann</Nachname>
+    <Vorname>Max</Vorname>
+    <AkadTitel1>DI</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Höhere technische Lehranstalt</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Informatik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>prog</Themengebiet><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Medientechnik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>design</Themengebiet><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Medizintechnik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>sci</Themengebiet><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Elektronik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>401902</SKZ>
+    <Schule>HTL Linz Paul-Hahn-Straße</Schule>
+    <Straße>Beispielgasse 3</Straße>
+    <PLZ>4010</PLZ>
+    <Ort>Linz</Ort>
+    <Telefon>0732 000 011</Telefon>
+    <Fax>0732 000 012</Fax>
+    <E-Mail>office@htl-linz-phs.example</E-Mail>
+    <Webseite>https://www.htl-linz-phs.example/</Webseite>
+    <Amtstitel>Direktorin</Amtstitel>
+    <Anrede>Frau</Anrede>
+    <Nachname>Musterfrau</Nachname>
+    <Vorname>Maria</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Höhere technische Lehranstalt</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Maschinenbau</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet><Themengebiet>sci</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Elektrotechnik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Mechatronik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Wirtschaftsingenieurwesen</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>401903</SKZ>
+    <Schule>BG/BRG Linz Khevenhüllerstraße</Schule>
+    <Straße>Beispielplatz 5</Straße>
+    <PLZ>4020</PLZ>
+    <Ort>Linz</Ort>
+    <Telefon>0732 000 021</Telefon>
+    <Fax>0732 000 022</Fax>
+    <E-Mail>office@bgbrg-khevenhueller.example</E-Mail>
+    <Webseite>https://www.bgbrg-khevenhueller.example/</Webseite>
+    <Amtstitel>Direktor</Amtstitel>
+    <Anrede>Herr</Anrede>
+    <Nachname>Beispiel</Nachname>
+    <Vorname>Peter</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Allgemeinbildende höhere Schule</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Gymnasium</Bezeichnung>
+        <SchulstufeVon>5</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>lang</Themengebiet><Themengebiet>sci</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Realgymnasium</Bezeichnung>
+        <SchulstufeVon>5</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>sci</Themengebiet><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Oberstufenrealgymnasium mit Informatik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>prog</Themengebiet><Themengebiet>sci</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>401904</SKZ>
+    <Schule>BORG Linz</Schule>
+    <Straße>Musterweg 8</Straße>
+    <PLZ>4020</PLZ>
+    <Ort>Linz</Ort>
+    <Telefon>0732 000 031</Telefon>
+    <Fax>0732 000 032</Fax>
+    <E-Mail>office@borg-linz.example</E-Mail>
+    <Webseite>https://www.borg-linz.example/</Webseite>
+    <Amtstitel>Direktorin</Amtstitel>
+    <Anrede>Frau</Anrede>
+    <Nachname>Probst</Nachname>
+    <Vorname>Anna</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Oberstufenrealgymnasium</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Naturwissenschaften</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>sci</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Informatik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>prog</Themengebiet><Themengebiet>sci</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Bildnerisches Gestalten</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>design</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Sport</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>401905</SKZ>
+    <Schule>HAK Wels</Schule>
+    <Straße>Beispielring 20</Straße>
+    <PLZ>4600</PLZ>
+    <Ort>Wels</Ort>
+    <Telefon>07242 000 041</Telefon>
+    <Fax>07242 000 042</Fax>
+    <E-Mail>office@hak-wels.example</E-Mail>
+    <Webseite>https://www.hak-wels.example/</Webseite>
+    <Amtstitel>Direktor</Amtstitel>
+    <Anrede>Herr</Anrede>
+    <Nachname>Muster</Nachname>
+    <Vorname>Thomas</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Handelsakademie</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Digital Business</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Entrepreneurship und Management</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Controlling und Finance</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>501901</SKZ>
+    <Schule>HLW Salzburg</Schule>
+    <Straße>Beispielallee 7</Straße>
+    <PLZ>5020</PLZ>
+    <Ort>Salzburg</Ort>
+    <Telefon>0662 000 051</Telefon>
+    <Fax>0662 000 052</Fax>
+    <E-Mail>office@hlw-salzburg.example</E-Mail>
+    <Webseite>https://www.hlw-salzburg.example/</Webseite>
+    <Amtstitel>Direktorin</Amtstitel>
+    <Anrede>Frau</Anrede>
+    <Nachname>Exempel</Nachname>
+    <Vorname>Eva</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Höhere Lehranstalt für wirtschaftliche Berufe</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Wirtschaft</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Kultur- und Kongressmanagement</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>lang</Themengebiet><Themengebiet>biz</Themengebiet><Themengebiet>design</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Umwelt und Wirtschaft</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>sci</Themengebiet><Themengebiet>biz</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>701901</SKZ>
+    <Schule>BAfEP Innsbruck</Schule>
+    <Straße>Beispielstraße 41</Straße>
+    <PLZ>6020</PLZ>
+    <Ort>Innsbruck</Ort>
+    <Telefon>0512 000 061</Telefon>
+    <Fax>0512 000 062</Fax>
+    <E-Mail>office@bafep-innsbruck.example</E-Mail>
+    <Webseite>https://www.bafep-innsbruck.example/</Webseite>
+    <Amtstitel>Direktor</Amtstitel>
+    <Anrede>Herr</Anrede>
+    <Nachname>Beispiel</Nachname>
+    <Vorname>Lukas</Vorname>
+    <AkadTitel1>Mag.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Bildungsanstalt für Elementarpädagogik</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Elementarpädagogik</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Elementarpädagogik mit Schwerpunkt Kreativität</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>design</Themengebiet><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>201901</SKZ>
+    <Schule>MS Villach 3</Schule>
+    <Straße>Beispielgasse 15</Straße>
+    <PLZ>9500</PLZ>
+    <Ort>Villach</Ort>
+    <Telefon>04242 000 071</Telefon>
+    <Fax>04242 000 072</Fax>
+    <E-Mail>s201901@ms-villach.example</E-Mail>
+    <Webseite>https://www.ms-villach3.example/</Webseite>
+    <Amtstitel>Direktorin</Amtstitel>
+    <Anrede>Frau</Anrede>
+    <Nachname>Muster</Nachname>
+    <Vorname>Sabine</Vorname>
+    <AkadTitel1/>
+    <Berufstitel>Mittelschuldirektorin</Berufstitel>
+    <AkadTitel2/>
+    <Schultyp>Mittelschule</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Informatikmittelschule</Bezeichnung>
+        <SchulstufeVon>5</SchulstufeVon>
+        <SchulstufeBis>8</SchulstufeBis>
+        <Themengebiete><Themengebiet>prog</Themengebiet><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Kreativmittelschule</Bezeichnung>
+        <SchulstufeVon>5</SchulstufeVon>
+        <SchulstufeBis>8</SchulstufeBis>
+        <Themengebiete><Themengebiet>design</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Sportmittelschule</Bezeichnung>
+        <SchulstufeVon>5</SchulstufeVon>
+        <SchulstufeBis>8</SchulstufeBis>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>901901</SKZ>
+    <Schule>Polytechnische Schule Wien 10</Schule>
+    <Straße>Beispielgürtel 9</Straße>
+    <PLZ>1100</PLZ>
+    <Ort>Wien</Ort>
+    <Telefon>01 000 0081</Telefon>
+    <Fax>01 000 0082</Fax>
+    <E-Mail>office@pts-wien10.example</E-Mail>
+    <Webseite>https://www.pts-wien10.example/</Webseite>
+    <Amtstitel>Direktor</Amtstitel>
+    <Anrede>Herr</Anrede>
+    <Nachname>Exempel</Nachname>
+    <Vorname>Karl</Vorname>
+    <AkadTitel1/>
+    <Berufstitel>Schulrat</Berufstitel>
+    <AkadTitel2/>
+    <Schultyp>Polytechnische Schule</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Metall</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>9</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Elektro</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>9</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Handel und Büro</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>9</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Dienstleistungen</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>9</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Tourismus</Bezeichnung>
+        <SchulstufeVon>9</SchulstufeVon>
+        <SchulstufeBis>9</SchulstufeBis>
+        <Themengebiete><Themengebiet>lang</Themengebiet><Themengebiet>biz</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+  <Schuldaten>
+    <SKZ>601901</SKZ>
+    <Schule>Landesberufsschule Graz 2</Schule>
+    <Straße>Beispielkai 4</Straße>
+    <PLZ>8020</PLZ>
+    <Ort>Graz</Ort>
+    <Telefon>0316 000 091</Telefon>
+    <Fax>0316 000 092</Fax>
+    <E-Mail>office@lbs-graz2.example</E-Mail>
+    <Webseite>https://www.lbs-graz2.example/</Webseite>
+    <Amtstitel>Direktorin</Amtstitel>
+    <Anrede>Frau</Anrede>
+    <Nachname>Beispiel</Nachname>
+    <Vorname>Julia</Vorname>
+    <AkadTitel1>Dipl.-Päd.</AkadTitel1>
+    <Berufstitel/>
+    <AkadTitel2/>
+    <Schultyp>Berufsschule</Schultyp>
+    <Zweige>
+      <Zweig>
+        <Bezeichnung>Applikationsentwicklung – Coding</Bezeichnung>
+        <SchulstufeVon>10</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>prog</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Elektrotechnik</Bezeichnung>
+        <SchulstufeVon>10</SchulstufeVon>
+        <SchulstufeBis>13</SchulstufeBis>
+        <Themengebiete><Themengebiet>tech</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Bürokauffrau / Bürokaufmann</Bezeichnung>
+        <SchulstufeVon>10</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet></Themengebiete>
+      </Zweig>
+      <Zweig>
+        <Bezeichnung>Einzelhandel</Bezeichnung>
+        <SchulstufeVon>10</SchulstufeVon>
+        <SchulstufeBis>12</SchulstufeBis>
+        <Themengebiete><Themengebiet>biz</Themengebiet><Themengebiet>lang</Themengebiet></Themengebiete>
+      </Zweig>
+    </Zweige>
+  </Schuldaten>
+
+</Schulen>

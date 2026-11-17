@@ -137,21 +137,178 @@
   var OFFER_BY_ID = {};
   OFFERS.forEach(function (o) { OFFER_BY_ID[o.id] = o; });
 
+  /* ---------- Schulen (kommen aus dummySchulen.xml) ---------- */
+  var SCHOOLS_URL = 'dummySchulen.xml';
+  // Vorausgewählte Schule der Beispiel-Schülerin (SKZ, Name des Zweigs, Schulstufe)
+  var DEFAULT_PICK = { skz: '401901', branch: 'Informatik', stufe: 13 };
+  // Falls die Schulliste nicht geladen werden kann, gelten diese Werte
+  var PROFILE_FALLBACK = { school: 'HTL Leonding', skz: '', schoolType: '', branch: 'Informatik', level: '13. Schulstufe', stufe: 13, year: '5. Jahrgang', topics: ['prog', 'tech'], compulsory: true, degree: 'Pflichtschulabschluss' };
+  var COMPULSORY_YEARS = 9;   // Schulpflicht in Österreich: 9 Schuljahre
+  var MAX_HITS = 8;           // so viele Treffer zeigt die Schulsuche auf einmal
+
+  // Schulstufen je Schultyp. Gilt, wenn ein Zweig keine Angabe hat oder die Schule gar keine Zweige.
+  // Reihenfolge zählt: der erste Treffer im Schultyp gewinnt.
+  var STUFEN_BY_TYPE = [
+    ['volksschule', 1, 4],
+    ['polytechnisch', 9, 9],
+    ['berufsschule', 10, 13],
+    ['mittelschule', 5, 8], ['hauptschule', 5, 8],
+    ['oberstufenrealgymnasium', 9, 12], ['borg', 9, 12],
+    ['allgemeinbildende', 5, 12], ['gymnasium', 5, 12], ['ahs', 5, 12],
+    ['handelsschule', 9, 11], ['fachschule', 9, 11], ['mittlere', 9, 11],
+    ['höhere', 9, 13], ['handelsakademie', 9, 13], ['bildungsanstalt', 9, 13], ['htl', 9, 13], ['hak', 9, 13]
+  ];
+  var STUFEN_FALLBACK = [5, 13];
+
+  var SCHOOLS = [];
+  var SCHOOL_BY_ID = {};
+  var schools = { ready: false, error: '', source: '' };
+
+  function stufenForType(type) {
+    var t = String(type || '').toLowerCase();
+    for (var i = 0; i < STUFEN_BY_TYPE.length; i++) if (t.indexOf(STUFEN_BY_TYPE[i][0]) > -1) return [STUFEN_BY_TYPE[i][1], STUFEN_BY_TYPE[i][2]];
+    return STUFEN_FALLBACK;
+  }
+  function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss'); }
+  function topicKey(txt) {
+    var t = String(txt || '').trim().toLowerCase();
+    var keys = Object.keys(TOPICS);
+    for (var i = 0; i < keys.length; i++) if (keys[i].toLowerCase() === t || TOPICS[keys[i]].label.toLowerCase() === t) return keys[i];
+    return null;
+  }
+
+  // XML-Hilfen: Tags werden ohne Rücksicht auf Groß- und Kleinschreibung gefunden
+  function kids(el, name) {
+    var out = [], n = name.toLowerCase();
+    for (var c = el.firstElementChild; c; c = c.nextElementSibling) if (c.localName.toLowerCase() === n) out.push(c);
+    return out;
+  }
+  function kidText(el, name) {
+    var k = kids(el, name)[0];
+    return k ? k.textContent.replace(/\s+/g, ' ').trim() : '';
+  }
+
+  function parseSchools(xmlText) {
+    var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+    var bad = doc.getElementsByTagName('parsererror')[0];
+    if (bad) throw new Error('dummySchulen.xml ist kein gültiges XML: ' + bad.textContent.trim().split('\n')[0]);
+    var list = [], seen = {};
+    Array.prototype.forEach.call(doc.getElementsByTagName('Schuldaten'), function (el, i) {
+      var name = kidText(el, 'Schule');
+      if (!name) return;
+      var id = kidText(el, 'SKZ') || ('schule-' + (i + 1));
+      if (seen[id]) return;
+      seen[id] = true;
+      var type = kidText(el, 'Schultyp');
+      var def = stufenForType(type);
+      var zEl = kids(el, 'Zweige')[0];
+      var zweige = zEl ? kids(zEl, 'Zweig').map(function (z) {
+        var zname = kidText(z, 'Bezeichnung');
+        if (!zname) return null;
+        var von = parseInt(kidText(z, 'SchulstufeVon'), 10), bis = parseInt(kidText(z, 'SchulstufeBis'), 10);
+        if (!(von > 0)) von = def[0];
+        if (!(bis > 0)) bis = def[1];
+        if (bis < von) bis = von;
+        var topics = [], tEl = kids(z, 'Themengebiete')[0];
+        if (tEl) kids(tEl, 'Themengebiet').forEach(function (t) {
+          var k = topicKey(t.textContent);
+          if (k && topics.indexOf(k) === -1) topics.push(k);
+        });
+        return { name: zname, von: von, bis: bis, topics: topics };
+      }).filter(Boolean) : [];
+      var school = {
+        id: id, name: name, type: type, zweige: zweige,
+        street: kidText(el, 'Straße'), zip: kidText(el, 'PLZ'), city: kidText(el, 'Ort'),
+        phone: kidText(el, 'Telefon'), email: kidText(el, 'E-Mail'), web: kidText(el, 'Webseite')
+      };
+      school.hay = norm([name, type, school.zip, school.city].join(' '));
+      school.nameN = norm(name);
+      list.push(school);
+    });
+    if (!list.length) throw new Error('In dummySchulen.xml wurde keine Schule gefunden (erwartet: <Schulen><Schuldaten>…).');
+    list.sort(function (a, b) { return a.name.localeCompare(b.name, 'de'); });
+    return list;
+  }
+
+  // Lädt dummySchulen.xml. Beim Öffnen per Doppelklick (file://) verbietet der Browser fetch();
+  // dann gilt die eingebettete Kopie aus dummySchulen-fallback.js (erzeugt mit tools/sync-fallback.py).
+  function loadSchools() {
+    return fetch(SCHOOLS_URL, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function (text) { return { text: text, source: 'xml' }; }, function (err) {
+        if (window.PATHMATCH_SCHULEN_XML) {
+          if (window.console) console.warn('PathMatch: dummySchulen.xml konnte nicht geladen werden (' + err.message + '). Es wird die eingebettete Kopie aus dummySchulen-fallback.js genutzt. Für die echte Datei den Prototyp über einen lokalen Server öffnen.');
+          return { text: window.PATHMATCH_SCHULEN_XML, source: 'fallback' };
+        }
+        throw new Error('dummySchulen.xml konnte nicht geladen werden (' + err.message + ').');
+      })
+      .then(function (res) {
+        SCHOOLS = parseSchools(res.text);
+        SCHOOL_BY_ID = {};
+        SCHOOLS.forEach(function (sc) { SCHOOL_BY_ID[sc.id] = sc; });
+        schools.source = res.source;
+        schools.ready = true;
+      })
+      .catch(function (err) {
+        schools.error = err.message;
+        if (window.console) console.error('PathMatch: ' + err.message);
+      });
+  }
+
+  function searchSchools(query) {
+    var terms = norm(query).split(/\s+/).filter(Boolean);
+    if (!terms.length) return SCHOOLS.slice();
+    return SCHOOLS.filter(function (sc) {
+      return terms.every(function (t) { return sc.hay.indexOf(t) > -1; });
+    }).map(function (sc) {
+      return { sc: sc, rank: sc.nameN.indexOf(terms[0]) === 0 ? 0 : sc.nameN.indexOf(terms[0]) > -1 ? 1 : 2 };
+    }).sort(function (a, b) { return a.rank - b.rank || a.sc.name.localeCompare(b.sc.name, 'de'); })
+      .map(function (x) { return x.sc; });
+  }
+
+  // Schulstufen, die es im Zweig (oder, ohne Zweig, im Schultyp) gibt
+  function stufeRange(school, zweig) {
+    return zweig ? [zweig.von, zweig.bis] : stufenForType(school ? school.type : '');
+  }
+  // Wievielte Klasse bzw. welcher Jahrgang ist das? Rechnet sich aus der Schulstufe.
+  function yearText(school, zweig, stufe) {
+    if (!school || !stufe) return '';
+    var r = stufeRange(school, zweig), n = stufe - r[0] + 1, t = school.type.toLowerCase();
+    var unit = t.indexOf('berufsschule') > -1 ? 'Lehrjahr'
+      : (t.indexOf('oberstufenreal') === -1 && /volksschule|mittelschule|hauptschule|polytechn|allgemeinbildende|gymnasium/.test(t)) ? 'Klasse'
+      : 'Jahrgang';
+    return n + '. ' + unit;
+  }
+  // Pflichtschule = 9 Schuljahre. Wer in der 10. Schulstufe oder höher ist, hat sie abgeschlossen.
+  function compulsoryInfo(stufe) {
+    if (!stufe) return { done: false, text: 'Sobald du deine Schulstufe gewählt hast, tragen wir das für dich ein.' };
+    if (stufe > COMPULSORY_YEARS) return { done: true, text: 'Du bist in der ' + stufe + '. Schulstufe, die 9 Pflichtschuljahre hast du damit schon hinter dir.' };
+    if (stufe === COMPULSORY_YEARS) return { done: false, text: 'Du bist in der 9. Schulstufe, dem letzten Pflichtschuljahr. Abgeschlossen hast du die Pflichtschule, sobald du dieses Schuljahr bestehst.' };
+    return { done: false, text: 'Du bist in der ' + stufe + '. Schulstufe. Die Pflichtschule dauert 9 Schuljahre, du hast sie also noch nicht abgeschlossen.' };
+  }
+  // Welche höchsten Abschlüsse zur aktuellen Schule passen: Wer gerade in einer Matura-Schule ist, hat noch keine Matura.
+  // Wer in der Berufsschule ist, steckt mitten in der Lehre (also noch kein Lehrabschluss), kann aber schon maturiert haben.
+  function degreeChoices(school) {
+    var t = school ? school.type.toLowerCase() : '';
+    if (t.indexOf('berufsschule') > -1) return ['Pflichtschulabschluss', 'Reifeprüfung (Matura)', 'Berufsreifeprüfung'];
+    return ['Pflichtschulabschluss', 'Lehrabschluss'];
+  }
+
   var DEFAULT_CATS = ['Erste Wahl', 'Vielleicht', 'Später ansehen'];
   var DEFAULT_FAVS = { 'fhooe-se': 'Erste Wahl', 'jku-ai': 'Erste Wahl', 'nordlicht': 'Vielleicht', 'donaupixel': 'Später ansehen' };
   var GOAL_TEXT = { study: 'Studieren', work: 'Arbeiten', open: 'Ich weiß es noch nicht' };
 
   /* ---------- Ablauf der Registrierung (Unterseiten) ---------- */
   var GROUPS = [
-    { name: 'Über dich', desc: 'Konto, Name, Abschluss, Schule' },
+    { name: 'Über dich', desc: 'Konto, Name, Schule, Abschluss' },
     { name: 'Nach der Schule', desc: 'Studieren, arbeiten oder offen' },
     { name: 'Kenntnisse und Interessen', desc: 'Auswählen, bewerten, beschreiben' }
   ];
   var FLOW = [
     { id: 'signup-account', group: 0, name: 'Konto' },
     { id: 'signup-name', group: 0, name: 'Name' },
-    { id: 'signup-degree', group: 0, name: 'Abschluss' },
     { id: 'signup-school', group: 0, name: 'Schule' },
+    { id: 'signup-degree', group: 0, name: 'Abschluss' },
     { id: 'signup-goal', group: 1, name: 'Ziel' },
     { id: 'signup-skills', group: 2, name: 'Kenntnisse' },
     { id: 'signup-rating', group: 2, name: 'Bewertung' },
@@ -167,6 +324,7 @@
     screen: 'start',
     goal: 'open',
     topic: 'prog',
+    topicSig: '',
     skills: [],
     profile: {},
     favs: store.get('favs', null) || JSON.parse(JSON.stringify(DEFAULT_FAVS)),
@@ -216,7 +374,12 @@
       .map(function (s) { return s + ' ' + skillLevel(s) + '/10'; });
     if (state.goal === 'study' && o.type === 'Studium') list.push('Dein Ziel: Studieren');
     if (state.goal === 'work' && o.type !== 'Studium') list.push('Dein Ziel: Arbeiten');
-    return list.concat(o.why);
+    var branch = (state.profile.branch || '').toLowerCase(), topics = state.profile.topics || [];
+    return list.concat(o.why.filter(function (w) {
+      if (w === 'Zweig Informatik') return branch.indexOf('informatik') > -1;       // gilt nur für diesen Zweig
+      if (w === 'Technischer Schulzweig') return topics.indexOf('tech') > -1;
+      return true;
+    }));
   }
   function matchLabel(m) { return m >= 85 ? 'Sehr gute Übereinstimmung' : m >= 70 ? 'Gute Übereinstimmung' : 'Teilweise passend'; }
   var RING_C = 2 * Math.PI * 28;
@@ -340,7 +503,7 @@
       ? 'Deine persönlichen Daten und deine Schule änderst du in deinem Konto.'
       : 'Du entscheidest, was du angibst. Deine Angaben kannst du später jederzeit ändern.';
 
-    if (name === 'signup-skills') { renderChips(); renderSelection(); }
+    if (name === 'signup-skills') { renderTopicSelect(); renderChips(); renderSelection(); }
     if (name === 'signup-rating') renderRatings();
     if (name === 'signup-interests') updateCount();
   }
@@ -409,8 +572,12 @@
     }
   }
   function validate(input) {
+    if (input.dataset.combo) {
+      if (pickers[input.dataset.combo] && pickers[input.dataset.combo].hasSchool()) return '';
+      return schools.error ? 'Die Schulliste konnte nicht geladen werden.' : 'Bitte such deine Schule und wähl sie aus der Liste aus.';
+    }
     var v = input.value.trim();
-    if (!v) return 'Bitte ausfüllen.';
+    if (!v) return input.dataset.msg || 'Bitte ausfüllen.';
     if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'Bitte gib eine gültige E-Mail-Adresse ein, z. B. name@example.com.';
     if (input.type === 'password' && input.autocomplete === 'new-password' && v.length < 8) return 'Das Passwort braucht mindestens 8 Zeichen.';
     return '';
@@ -418,6 +585,7 @@
   function validateAll(root) {
     var firstBad = null;
     $$('[data-required]', root).forEach(function (input) {
+      if (input.disabled) { setError(input, ''); return; }
       var msg = validate(input);
       setError(input, msg);
       if (msg && !firstBad) firstBad = input;
@@ -449,19 +617,243 @@
     });
   });
 
-  $('#f-compulsory').addEventListener('change', function (e) { $('#f-degree-wrap').hidden = !e.target.checked; });
+  /* ---------- Schulauswahl: Schule -> Zweig -> Schulstufe -> Pflichtschule und Abschluss ----------
+     Gleicher Baustein für die Registrierung (Präfix "f") und das Konto (Präfix "a"). */
+  var pickers = {};
+  function setHint(node, text) {
+    var target = node.querySelector('span') || node;
+    target.textContent = text;
+  }
+
+  function createPicker(x) {
+    var el = {
+      school: $('#' + x + '-school'), list: $('#' + x + '-school-list'), status: $('#' + x + '-school-status'), card: $('#' + x + '-school-card'),
+      branch: $('#' + x + '-branch'), branchHint: $('#' + x + '-branch-hint'),
+      level: $('#' + x + '-level'), levelHint: $('#' + x + '-level-hint'),
+      compulsory: $('#' + x + '-compulsory'), compHint: $('#' + x + '-compulsory-hint'),
+      degWrap: $('#' + x + '-degree-wrap'), degree: $('#' + x + '-degree')
+    };
+    var pk = { school: null, zweig: null, stufe: 0, hits: [], active: -1, open: false };
+
+    /* Kärtchen mit Überblick über die gewählte Schule */
+    function renderCard() {
+      var sc = pk.school;
+      if (!sc) { el.card.hidden = true; el.card.innerHTML = ''; return; }
+      var addr = [sc.street, [sc.zip, sc.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      var html = '';
+      if (sc.type) html += '<span class="tag">' + icon('i-cap') + esc(sc.type) + '</span>';
+      html += '<p class="school-card-name">' + esc(sc.name) + '</p>';
+      if (addr) html += '<p class="school-card-line">' + icon('i-pin') + '<span>' + esc(addr) + '</span></p>';
+      if (sc.zweige.length) html += '<p class="school-card-line">' + icon('i-list') + '<span>' + sc.zweige.length + (sc.zweige.length === 1 ? ' Zweig' : ' Zweige') + ' an dieser Schule</span></p>';
+      if (pk.zweig && pk.zweig.topics.length) {
+        html += '<div class="school-card-topics"><span>Vorgeschlagene Themengebiete für „' + esc(pk.zweig.name) + '“. Du siehst sie bei den Kenntnissen zuerst:</span><div class="mini-chips">' +
+          pk.zweig.topics.map(function (k) { return '<span class="pill">' + esc(TOPICS[k].label) + '</span>'; }).join('') + '</div></div>';
+      }
+      el.card.innerHTML = html;
+      el.card.hidden = false;
+    }
+
+    /* Zweig */
+    function fillBranches() {
+      var sc = pk.school, sel = el.branch;
+      setError(sel, '');
+      el.branchHint.hidden = true;
+      if (!sc) { sel.innerHTML = '<option value="">Zuerst Schule wählen</option>'; sel.disabled = true; return; }
+      if (!sc.zweige.length) {
+        sel.innerHTML = '<option value="">Kein Zweig hinterlegt</option>';
+        sel.disabled = true;
+        el.branchHint.textContent = 'Für diese Schule sind noch keine Zweige hinterlegt. Du kannst trotzdem weitermachen.';
+        el.branchHint.hidden = false;
+        return;
+      }
+      sel.disabled = false;
+      sel.innerHTML = '<option value="">Zweig auswählen</option>' + sc.zweige.map(function (z, i) {
+        return '<option value="' + i + '">' + esc(z.name) + '</option>';
+      }).join('');
+      sel.value = pk.zweig ? String(sc.zweige.indexOf(pk.zweig)) : '';
+    }
+    /* Schulstufe */
+    function fillLevels() {
+      var sc = pk.school, sel = el.level;
+      setError(sel, '');
+      if (!sc) { pk.stufe = 0; sel.innerHTML = '<option value="">Zuerst Schule wählen</option>'; sel.disabled = true; return; }
+      if (sc.zweige.length && !pk.zweig) { pk.stufe = 0; sel.innerHTML = '<option value="">Zuerst Zweig wählen</option>'; sel.disabled = true; return; }
+      var r = stufeRange(sc, pk.zweig);
+      if (pk.stufe < r[0] || pk.stufe > r[1]) pk.stufe = 0;
+      if (r[0] === r[1]) pk.stufe = r[0];      // gibt es nur eine Schulstufe, ist sie klar
+      var html = '<option value="">Schulstufe auswählen</option>';
+      for (var n = r[0]; n <= r[1]; n++) html += '<option value="' + n + '">' + n + '. Schulstufe</option>';
+      sel.innerHTML = html;
+      sel.disabled = false;
+      sel.value = pk.stufe ? String(pk.stufe) : '';
+    }
+    /* Pflichtschule und Abschluss hängen an der Schulstufe */
+    function syncCompulsory() {
+      var info = compulsoryInfo(pk.stufe);
+      el.compulsory.checked = info.done;
+      el.degWrap.hidden = !info.done;
+      setHint(el.compHint, info.text);
+      var choices = degreeChoices(pk.school), cur = el.degree.value;
+      el.degree.innerHTML = choices.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
+      el.degree.value = choices.indexOf(cur) > -1 ? cur : choices[0];
+    }
+    function syncAll() {
+      fillLevels();
+      var yt = yearText(pk.school, pk.zweig, pk.stufe);
+      el.levelHint.textContent = yt ? 'Das heißt bei dir: ' + yt + '.' : '';
+      renderCard();
+      syncCompulsory();
+    }
+
+    /* Schulsuche (Combobox) */
+    function setActive(i) {
+      pk.active = i;
+      $$('.combo-opt', el.list).forEach(function (o, k) { o.classList.toggle('is-active', k === i); });
+      var cur = i > -1 ? el.list.querySelector('.combo-opt[data-i="' + i + '"]') : null;
+      if (cur) { el.school.setAttribute('aria-activedescendant', cur.id); cur.scrollIntoView({ block: 'nearest' }); }
+      else el.school.removeAttribute('aria-activedescendant');
+    }
+    function renderList() {
+      // Steht die gewählte Schule im Feld, zeigen wir die ganze Liste, damit man leicht wechseln kann
+      var q = pk.school && norm(el.school.value) === pk.school.nameN ? '' : el.school.value;
+      var html = '', all = [];
+      pk.hits = [];
+      if (schools.error) html = '<li class="combo-note" role="presentation">Die Schulliste konnte nicht geladen werden.</li>';
+      else if (!schools.ready) html = '<li class="combo-note" role="presentation">Schulen werden geladen …</li>';
+      else {
+        all = searchSchools(q);
+        pk.hits = all.slice(0, MAX_HITS);
+        html = pk.hits.map(function (sc, i) {
+          var meta = [sc.type, [sc.zip, sc.city].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
+          return '<li class="combo-opt" role="option" id="' + x + '-school-opt-' + i + '" data-i="' + i + '" aria-selected="' + !!(pk.school && pk.school.id === sc.id) + '">' +
+            '<span class="combo-name">' + esc(sc.name) + '</span>' + (meta ? '<span class="combo-meta">' + esc(meta) + '</span>' : '') + '</li>';
+        }).join('');
+        if (!all.length) html = '<li class="combo-note" role="presentation">Keine Schule gefunden. Versuch es mit dem Ort oder der Postleitzahl.</li>';
+        else if (all.length > pk.hits.length) html += '<li class="combo-note" role="presentation">Und ' + (all.length - pk.hits.length) + ' weitere. Gib mehr vom Namen ein, um die Liste einzugrenzen.</li>';
+      }
+      el.list.innerHTML = html;
+      el.status.textContent = !schools.ready ? '' : all.length === 1 ? '1 Schule gefunden.' : all.length + ' Schulen gefunden.';
+      pk.active = -1;
+      el.school.removeAttribute('aria-activedescendant');
+    }
+    function openList() { el.list.hidden = false; el.school.setAttribute('aria-expanded', 'true'); pk.open = true; }
+    function closeList() { el.list.hidden = true; el.school.setAttribute('aria-expanded', 'false'); el.school.removeAttribute('aria-activedescendant'); pk.open = false; pk.active = -1; }
+    function showList() { renderList(); openList(); }
+
+    function clearSchool() {
+      pk.school = null; pk.zweig = null; pk.stufe = 0;
+      fillBranches();
+      syncAll();
+    }
+    function pickSchool(sc) {
+      var changed = !pk.school || pk.school.id !== sc.id;
+      pk.school = sc;
+      el.school.value = sc.name;
+      closeList();
+      setError(el.school, '');
+      if (changed) { pk.zweig = null; pk.stufe = 0; }
+      if (changed && sc.zweige.length === 1) pk.zweig = sc.zweige[0];
+      fillBranches();
+      syncAll();
+    }
+
+    el.school.addEventListener('input', function () {
+      if (pk.school && norm(el.school.value) !== pk.school.nameN) clearSchool();
+      var exact = SCHOOLS.filter(function (sc) { return sc.nameN === norm(el.school.value.trim()); });
+      if (!pk.school && exact.length === 1) { pickSchool(exact[0]); return; }
+      showList();
+    });
+    el.school.addEventListener('click', function () { if (!pk.open) showList(); });
+    el.school.addEventListener('blur', closeList);
+    el.school.addEventListener('keydown', function (e) {
+      var n = pk.hits.length;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!pk.open) showList();
+        n = pk.hits.length;
+        if (!n) return;
+        var step = e.key === 'ArrowDown' ? 1 : -1;
+        setActive(pk.active === -1 ? (step === 1 ? 0 : n - 1) : (pk.active + step + n) % n);
+      } else if (e.key === 'Enter' && pk.open) {
+        e.preventDefault();
+        if (pk.active > -1) pickSchool(pk.hits[pk.active]);
+        else if (n === 1 && el.school.value.trim()) pickSchool(pk.hits[0]);
+        else if (n) setActive(0);
+      } else if (e.key === 'Escape' && pk.open) {
+        e.preventDefault(); closeList();
+      } else if (e.key === 'Tab') closeList();
+    });
+    // mousedown würde dem Feld den Fokus nehmen, bevor der Klick ankommt
+    el.list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    el.list.addEventListener('click', function (e) {
+      var o = e.target.closest('.combo-opt');
+      if (o) pickSchool(pk.hits[+o.dataset.i]);
+    });
+
+    el.branch.addEventListener('change', function () {
+      pk.zweig = el.branch.value === '' ? null : pk.school.zweige[+el.branch.value];
+      syncAll();
+    });
+    el.level.addEventListener('change', function () {
+      pk.stufe = el.level.value ? +el.level.value : 0;
+      syncAll();
+    });
+
+    var api = {
+      hasSchool: function () { return !!pk.school; },
+      setValue: function (v) {
+        pk.school = SCHOOL_BY_ID[v.skz] || null;
+        el.school.value = pk.school ? pk.school.name : '';
+        pk.zweig = null;
+        if (pk.school) {
+          var zi = -1;
+          pk.school.zweige.forEach(function (z, i) { if (z.name === v.branch) zi = i; });
+          if (zi > -1) pk.zweig = pk.school.zweige[zi];
+          else if (pk.school.zweige.length === 1) pk.zweig = pk.school.zweige[0];
+        }
+        pk.stufe = v.stufe || 0;
+        setError(el.school, '');
+        closeList();
+        fillBranches();
+        if (v.degree) el.degree.value = v.degree;
+        syncAll();
+        if (v.degree) el.degree.value = v.degree;
+      },
+      read: function () {
+        var sc = pk.school, z = pk.zweig, st = pk.stufe;
+        return {
+          skz: sc ? sc.id : '', school: sc ? sc.name : '', schoolType: sc ? sc.type : '',
+          branch: z ? z.name : '', stufe: st, level: st ? st + '. Schulstufe' : '',
+          year: yearText(sc, z, st), topics: z ? z.topics.slice() : [],
+          compulsory: el.compulsory.checked, degree: el.degree.value
+        };
+      }
+    };
+    fillBranches();
+    syncAll();
+    return api;
+  }
+  pickers.f = createPicker('f');
+  pickers.a = createPicker('a');
 
   function readProfile() {
+    var pick = pickers.f.read(), fb = PROFILE_FALLBACK;
+    // Ist die Schule gewählt, gelten die Angaben aus der Schulauswahl (auch ein leerer Zweig). Sonst die Ausgangswerte.
+    var hasSchool = !!pick.skz;
     state.profile = {
       first: $('#f-first').value.trim() || 'Lena',
       last: $('#f-last').value.trim() || 'Hofer',
       email: $('#f-email').value.trim() || 'lena.hofer@example.com',
-      school: $('#f-school').value || 'HTL Leonding',
-      branch: $('#f-branch').value,
-      level: $('#f-level').value,
-      year: $('#f-year').value,
-      compulsory: $('#f-compulsory').checked,
-      degree: $('#f-degree').value
+      school: hasSchool ? pick.school : fb.school,
+      skz: hasSchool ? pick.skz : fb.skz,
+      schoolType: hasSchool ? pick.schoolType : fb.schoolType,
+      branch: hasSchool ? pick.branch : fb.branch,
+      stufe: hasSchool && pick.stufe ? pick.stufe : fb.stufe,
+      level: hasSchool && pick.stufe ? pick.level : fb.level,
+      year: hasSchool && pick.stufe ? pick.year : fb.year,
+      topics: hasSchool ? pick.topics : fb.topics.slice(),
+      compulsory: hasSchool && pick.stufe ? pick.compulsory : fb.compulsory,
+      degree: hasSchool && pick.stufe ? pick.degree : fb.degree
     };
     applyProfile();
   }
@@ -486,16 +878,42 @@
 
   /* Kenntnisse auswählen */
   var topicSelect = $('#f-topic');
-  Object.keys(TOPICS).forEach(function (key) {
-    var opt = document.createElement('option');
-    opt.value = key; opt.textContent = TOPICS[key].label;
-    topicSelect.appendChild(opt);
-  });
   topicSelect.addEventListener('change', function () { state.topic = topicSelect.value; renderChips(); });
+
+  // Themengebiete, die zum Zweig der Schule gehören (kommen aus dummySchulen.xml)
+  function suggestedTopics() {
+    return (state.profile.topics || []).filter(function (k) { return has(TOPICS, k); });
+  }
+  // Vorgeschlagene Themengebiete stehen zuerst. Ändert sich der Zweig, startet die Auswahl wieder beim ersten Vorschlag.
+  function renderTopicSelect() {
+    var sug = suggestedTopics(), sig = sug.join(',');
+    if (sig !== state.topicSig) { state.topicSig = sig; if (sug.length) state.topic = sug[0]; }
+    var rest = Object.keys(TOPICS).filter(function (k) { return sug.indexOf(k) === -1; });
+    var opt = function (k) { return '<option value="' + k + '">' + esc(TOPICS[k].label) + '</option>'; };
+    topicSelect.innerHTML = sug.length
+      ? '<optgroup label="Passend zu deinem Zweig">' + sug.map(opt).join('') + '</optgroup>' +
+        (rest.length ? '<optgroup label="Weitere Themengebiete">' + rest.map(opt).join('') + '</optgroup>' : '')
+      : rest.map(opt).join('');
+    var box = $('#topic-suggest');
+    box.hidden = !sug.length;
+    if (sug.length) {
+      $('#topic-suggest-label').textContent = 'Vorgeschlagen für „' + state.profile.branch + '“';
+      $('#topic-suggest-chips').innerHTML = sug.map(function (k) {
+        return '<button type="button" class="pill pill-btn" data-topic="' + k + '" aria-pressed="false">' + esc(TOPICS[k].label) + '</button>';
+      }).join('');
+    }
+  }
+  $('#topic-suggest-chips').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-topic]');
+    if (!b) return;
+    state.topic = b.dataset.topic;
+    renderChips();
+  });
 
   function renderChips() {
     var t = TOPICS[state.topic];
     topicSelect.value = state.topic;
+    $$('#topic-suggest-chips [data-topic]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.topic === state.topic)); });
     $('#topic-question').textContent = t.q;
     $('#chips').innerHTML = t.items.map(function (name) {
       var on = skillLevel(name) > 0;
@@ -681,7 +1099,7 @@
     var p = state.profile;
     $('#offer-list').innerHTML =
       '<li class="path-start"><span class="pnode pnode--start" aria-hidden="true">' + esc(initials()) + '</span>' +
-        '<span class="plabel"><strong>Dein Start</strong>' + esc(p.school + ' · ' + p.branch + ' · ' + p.year) + '</span></li>' +
+        '<span class="plabel"><strong>Dein Start</strong>' + esc([p.school, p.branch, p.year].filter(Boolean).join(' · ')) + '</span></li>' +
       list.map(function (o, i) { return stopHTML(o, i, animate); }).join('') +
       '<li class="path-end"><span class="pnode pnode--end" aria-hidden="true"></span>' +
         '<span class="plabel"><strong>Ende deiner Vorschläge</strong>Ändere Filter oder Angaben, um weitere zu finden.</span></li>';
@@ -1274,11 +1692,6 @@
   $('#c-name').addEventListener('input', function (e) { if (e.target.getAttribute('aria-invalid')) setError(e.target, ''); });
 
   /* ---------- Konto ---------- */
-  ['school', 'branch', 'level', 'year', 'degree'].forEach(function (k) {
-    $('#a-' + k).innerHTML = $('#f-' + k).innerHTML;
-  });
-  $('#a-compulsory').addEventListener('change', function (e) { $('#a-degree-wrap').hidden = !e.target.checked; });
-
   function dl(rows) {
     return rows.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
   }
@@ -1287,10 +1700,11 @@
     $('#acc-avatar').textContent = initials();
     $('#acc-name').textContent = p.first + ' ' + p.last;
     $('#acc-email').textContent = p.email;
-    $('#acc-schoolline').textContent = p.school + ' · ' + p.branch;
+    $('#acc-schoolline').textContent = [p.school, p.branch].filter(Boolean).join(' · ');
     $('#view-personal').innerHTML = dl([['Vorname', p.first], ['Nachname', p.last], ['E-Mail', p.email]]);
     $('#view-school').innerHTML = dl([
-      ['Schule', p.school], ['Zweig', p.branch], ['Schulstufe', p.level], ['Schuljahr', p.year],
+      ['Schule', p.school], ['Zweig', p.branch || 'Kein Zweig hinterlegt'],
+      ['Schulstufe', p.level + (p.year ? ' (' + p.year + ')' : '')],
       ['Höchster Abschluss', p.compulsory ? p.degree : 'Pflichtschule noch nicht abgeschlossen']
     ]);
     $('#view-goal').innerHTML = dl([['Dein Ziel', GOAL_TEXT[state.goal]]]);
@@ -1310,10 +1724,7 @@
   function fillAccountForm(sec) {
     var p = state.profile;
     if (sec === 'personal') { $('#a-first').value = p.first; $('#a-last').value = p.last; $('#a-email').value = p.email; }
-    if (sec === 'school') {
-      $('#a-school').value = p.school; $('#a-branch').value = p.branch; $('#a-level').value = p.level; $('#a-year').value = p.year;
-      $('#a-compulsory').checked = p.compulsory; $('#a-degree').value = p.degree; $('#a-degree-wrap').hidden = !p.compulsory;
-    }
+    if (sec === 'school') pickers.a.setValue({ skz: p.skz, branch: p.branch, stufe: p.stufe, degree: p.degree });
     if (sec === 'goal') $('#a-goal').value = state.goal;
     if (sec === 'password') { $('#a-pw-old').value = ''; $('#a-pw-new').value = ''; $('#a-pw-repeat').value = ''; }
   }
@@ -1353,10 +1764,9 @@
   $('#form-school').addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validateAll(this)) return;
-    var p = state.profile;
-    ['school', 'branch', 'level', 'year', 'degree'].forEach(function (k) { p[k] = $('#a-' + k).value; $('#f-' + k).value = p[k]; });
-    p.compulsory = $('#a-compulsory').checked;
-    $('#f-compulsory').checked = p.compulsory; $('#f-degree-wrap').hidden = !p.compulsory;
+    var p = state.profile, v = pickers.a.read();
+    ['school', 'skz', 'schoolType', 'branch', 'stufe', 'level', 'year', 'topics', 'compulsory', 'degree'].forEach(function (k) { p[k] = v[k]; });
+    pickers.f.setValue(v);   // Registrierung und Konto zeigen dieselben Angaben
     finishEdit(this, 'Schule und Abschluss wurden gespeichert.');
   });
   $('#form-goal').addEventListener('submit', function (e) {
@@ -1454,9 +1864,13 @@
     var v = parseInt(r.getAttribute('aria-label'), 10);
     var bar = r.querySelector('.ring-bar'); if (bar && v) bar.style.stroke = ringColor(v);
   });
-  readProfile();
-  var initial = (location.hash || '').replace('#', '');
-  go(ALIASES[initial] || initial || 'start', { noFocus: true });
+  function init() {
+    if (schools.ready) pickers.f.setValue(DEFAULT_PICK);
+    readProfile();
+    var initial = (location.hash || '').replace('#', '');
+    go(ALIASES[initial] || initial || 'start', { noFocus: true });
+  }
+  loadSchools().then(init);
   window.addEventListener('hashchange', function () {
     var h = (location.hash || '').replace('#', '');
     h = ALIASES[h] || h;

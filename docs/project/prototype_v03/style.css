@@ -521,6 +521,43 @@ textarea.input { min-height: 160px; resize: vertical; line-height: 1.55; }
 
 .form-foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 24px; border-top: 1px solid var(--line); }
 
+/* Schulauswahl: Suchfeld mit Liste, Überblickskarte */
+.combo { position: relative; }
+.combo > .i { position: absolute; left: 16px; top: 26px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.combo .input { padding-left: 48px; }
+.combo-list {
+  position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px);
+  margin: 0; padding: 6px; list-style: none;
+  max-height: min(340px, 52vh); overflow-y: auto;
+  background: var(--white);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-field);
+  box-shadow: var(--shadow-md);
+  animation: pop .15s var(--ease-out);
+}
+.combo-opt { display: flex; flex-direction: column; gap: 1px; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+.combo-opt:hover, .combo-opt.is-active { background: var(--mist); }
+.combo-opt[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--blue); }
+.combo-name { font-weight: 700; color: var(--navy); }
+.combo-meta { font-size: 0.8125rem; color: var(--muted); }
+.combo-note { padding: 10px 12px; font-size: 0.875rem; color: var(--muted); }
+.school-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  margin-top: 6px; padding: 16px 18px;
+  border-radius: var(--r-field); background: var(--mist); color: var(--navy);
+  animation: rise .3s var(--ease-out);
+}
+.school-card-name { margin: 2px 0 0; font-family: var(--font-display); font-weight: 700; font-size: 1.125rem; line-height: 1.25; }
+.school-card-line { margin: 0; display: flex; gap: 8px; align-items: flex-start; font-size: 0.875rem; }
+.school-card-line .i { width: 16px; height: 16px; margin-top: 2px; color: var(--muted); }
+.school-card-topics { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--sky); font-size: 0.875rem; }
+.school-card-topics .pill { background: var(--white); border-color: var(--sky); }
+.input:disabled { cursor: not-allowed; color: var(--muted); background-color: var(--field); opacity: .75; }
+.input:disabled:hover { border-color: transparent; }
+.check:has(input:disabled) { cursor: default; }
+.check input:disabled { cursor: default; }
+.check input:disabled:not(:checked) { background-color: var(--field); border-color: var(--stone); }
+
 /* Ziel – Auswahlkarten */
 .choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .choice {
@@ -571,6 +608,11 @@ textarea.input { min-height: 160px; resize: vertical; line-height: 1.55; }
   cursor: pointer;
 }
 .pill-select:hover { border-color: var(--navy); }
+.topic-suggest { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: -8px; }
+.topic-suggest .label { font-size: 0.8125rem; font-weight: 400; color: var(--muted); }
+.pill-btn { cursor: pointer; font-family: inherit; transition: background-color .15s, border-color .15s; }
+.pill-btn:hover { border-color: var(--navy); }
+.pill-btn[aria-pressed="true"] { background: var(--sky); border-color: var(--navy); }
 .panel { border-radius: var(--r-card); padding: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .panel--mist { background: var(--mist); }
 .panel--line { border: 1.5px solid var(--line); }

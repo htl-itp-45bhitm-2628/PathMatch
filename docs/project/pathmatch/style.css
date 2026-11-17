@@ -1597,13 +1597,22 @@ textarea.input { min-height: 160px; resize: vertical; line-height: 1.55; }
     background: var(--mist);
   }
   #shell-signup .signup-form { gap: 24px; }
+  /* Die Überschrift klebt direkt unter dem Fortschrittsbalken (ohne Lücke, durch die man Formularfelder sieht).
+     Der Inhalt läuft dahinter weg und blendet unten weich aus. */
   #shell-signup .form-head {
     position: sticky;
     z-index: 20;
-    top: calc(var(--signup-mobile-rail-h) + 34px);
-    padding: 8px 0 12px;
+    top: calc(var(--signup-mobile-rail-h) + 4px);
+    padding: 14px 0 12px;
     background: var(--white);
-    box-shadow: 0 10px 12px -14px rgba(18, 38, 53, .45);
+  }
+  #shell-signup .form-head::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 100%;
+    height: 18px;
+    background: linear-gradient(var(--white), rgba(255, 255, 255, 0));
+    pointer-events: none;
   }
 
   /* Results header controls remain in a single flex row; the nav is icon-only. */

@@ -155,7 +155,7 @@
             <div class="how-text">
               <p class="how-kicker">Schritt 1</p>
               <h3 class="how-title">Profil <em>anlegen</em></h3>
-              <p>Gib deine Schule, deinen Zweig, deine Schulstufe und deinen Jahrgang an.</p>
+              <p>Such deine Schule und gib deinen Zweig und deine Schulstufe an.</p>
             </div>
           </article>
 
@@ -335,83 +335,61 @@
       </div>
     </form>
 
-    <!-- 1.3 Abschluss -->
-    <form class="signup-form" data-step="signup-degree" novalidate hidden>
+    <!-- 1.3 Schule -->
+    <form class="signup-form" data-step="signup-school" novalidate hidden>
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
-        <h1 class="h1" tabindex="-1">Dein bisheriger <em>Abschluss</em>.</h1>
-        <p class="sub">Hast du die Pflichtschule schon abgeschlossen? Dann sag uns, welcher Abschluss dein höchster ist.</p>
+        <h1 class="h1" tabindex="-1">Deine aktuelle <em>Schule</em>.</h1>
+        <p class="sub">Such deine Schule und wähl deinen Zweig und deine Schulstufe aus. Damit wissen wir, wo du gerade stehst und welche Themen für dich passen.</p>
       </div>
-      <div class="fieldset">
-        <label class="check check-card"><input type="checkbox" id="f-compulsory" checked> Pflichtschule abgeschlossen</label>
-        <div class="field reveal" id="f-degree-wrap">
-          <label class="label" for="f-degree">Höchster Abschluss</label>
-          <select class="input select" id="f-degree">
-            <option>Pflichtschulabschluss</option>
-            <option>Lehrabschluss</option>
-            <option>Reifeprüfung (Matura)</option>
-            <option>Berufsreifeprüfung</option>
-          </select>
+      <div class="field">
+        <label class="label" for="f-school">Welche Schule besuchst du gerade?<span class="req" aria-hidden="true">*</span></label>
+        <div class="combo">
+          <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+          <input class="input" id="f-school" type="text" role="combobox" aria-expanded="false" aria-controls="f-school-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Name, Ort oder Postleitzahl eingeben" data-required data-combo="f" aria-required="true" aria-describedby="f-school-hint">
+          <ul class="combo-list" id="f-school-list" role="listbox" aria-label="Schulen" hidden></ul>
+        </div>
+        <p class="hint" id="f-school-hint">Tipp: Such nach dem Namen, dem Ort oder der Postleitzahl und wähl deine Schule aus der Liste.</p>
+        <p class="sr-only" id="f-school-status" aria-live="polite"></p>
+        <p class="error" id="f-school-err" hidden></p>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label" for="f-branch">Zweig<span class="req" aria-hidden="true">*</span></label>
+          <select class="input select" id="f-branch" data-required data-msg="Bitte wähle deinen Zweig aus." disabled></select>
+          <p class="hint" id="f-branch-hint" hidden></p>
+          <p class="error" id="f-branch-err" hidden></p>
+        </div>
+        <div class="field">
+          <label class="label" for="f-level">Schulstufe<span class="req" aria-hidden="true">*</span></label>
+          <select class="input select" id="f-level" data-required data-msg="Bitte wähle deine Schulstufe aus." disabled></select>
+          <p class="hint" id="f-level-hint" aria-live="polite"></p>
+          <p class="error" id="f-level-err" hidden></p>
         </div>
       </div>
+      <div class="school-card" id="f-school-card" hidden></div>
+      <p class="req-note"><span aria-hidden="true">*</span> Pflichtfeld</p>
       <div class="form-foot">
         <button type="button" class="btn btn-link" data-back>Zurück</button>
         <button type="submit" class="btn btn-primary btn-lg" data-next>Weiter <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
       </div>
     </form>
 
-    <!-- 1.4 Schule -->
-    <form class="signup-form" data-step="signup-school" novalidate hidden>
+    <!-- 1.4 Abschluss -->
+    <form class="signup-form" data-step="signup-degree" novalidate hidden>
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
-        <h1 class="h1" tabindex="-1">Deine aktuelle <em>Schule</em>.</h1>
-        <p class="sub">Damit wissen wir, wo du gerade stehst und welche Fächer du schon hattest.</p>
+        <h1 class="h1" tabindex="-1">Dein bisheriger <em>Abschluss</em>.</h1>
+        <p class="sub">Die Pflichtschule dauert 9 Schuljahre. Ob du sie schon abgeschlossen hast, haben wir aus deiner Schulstufe abgeleitet.</p>
       </div>
-      <div class="field">
-        <label class="label" for="f-school">Welche Schule besuchst du gerade?<span class="req" aria-hidden="true">*</span></label>
-        <select class="input select" id="f-school" data-required aria-required="true">
-          <option value="">Schule auswählen</option>
-          <option selected>HTL Leonding</option>
-          <option>HTL Linz Paul-Hahn-Straße</option>
-          <option>HTL Linz Goethestraße</option>
-          <option>BG/BRG Linz Khevenhüllerstraße</option>
-          <option>BORG Linz</option>
-          <option>Andere Schule</option>
-        </select>
-        <p class="error" id="f-school-err" hidden></p>
-      </div>
-      <div class="grid-3">
-        <div class="field">
-          <label class="label" for="f-branch">Zweig</label>
-          <select class="input select" id="f-branch">
-            <option selected>Informatik</option>
-            <option>Medientechnik</option>
-            <option>Medizintechnik</option>
-            <option>Elektronik</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="label" for="f-level">Schulstufe</label>
-          <select class="input select" id="f-level">
-            <option>9. Schulstufe</option>
-            <option>10. Schulstufe</option>
-            <option>11. Schulstufe</option>
-            <option>12. Schulstufe</option>
-            <option selected>13. Schulstufe</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="label" for="f-year">Schuljahr</label>
-          <select class="input select" id="f-year">
-            <option>1. Jahrgang</option>
-            <option>2. Jahrgang</option>
-            <option>3. Jahrgang</option>
-            <option>4. Jahrgang</option>
-            <option selected>5. Jahrgang</option>
-          </select>
+      <div class="fieldset">
+        <label class="check check-card"><input type="checkbox" id="f-compulsory" aria-describedby="f-compulsory-hint" disabled> Pflichtschule abgeschlossen</label>
+        <p class="info-line" id="f-compulsory-hint"><svg class="i"><use href="#i-info"/></svg><span></span></p>
+        <div class="field reveal" id="f-degree-wrap">
+          <label class="label" for="f-degree">Höchster Abschluss</label>
+          <select class="input select" id="f-degree"></select>
         </div>
       </div>
-      <p class="req-note"><span aria-hidden="true">*</span> Pflichtfeld</p>
       <div class="form-foot">
         <button type="button" class="btn btn-link" data-back>Zurück</button>
         <button type="submit" class="btn btn-primary btn-lg" data-next>Weiter <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
@@ -468,6 +446,10 @@
       <div class="topic-row">
         <label class="label" for="f-topic">Themengebiet</label>
         <select class="pill-select" id="f-topic"></select>
+      </div>
+      <div class="topic-suggest" id="topic-suggest" hidden>
+        <span class="label" id="topic-suggest-label">Vorgeschlagen für deinen Zweig</span>
+        <div class="mini-chips" id="topic-suggest-chips" role="group" aria-labelledby="topic-suggest-label"></div>
       </div>
       <div class="panel panel--mist">
         <p class="panel-q" id="topic-question">Mit welchen Programmiersprachen hast du bereits gearbeitet?</p>
@@ -773,16 +755,33 @@
               <dl class="acc-view" id="view-school"></dl>
               <form class="acc-form" id="form-school" novalidate hidden>
                 <div class="field">
-                  <label class="label" for="a-school">Schule</label>
-                  <select class="input select" id="a-school" data-required></select>
-                  <p class="error" id="a-school-err" hidden></p>
-                </div>
-                <div class="grid-3">
-                  <div class="field"><label class="label" for="a-branch">Zweig</label><select class="input select" id="a-branch"></select></div>
-                  <div class="field"><label class="label" for="a-level">Schulstufe</label><select class="input select" id="a-level"></select></div>
-                  <div class="field"><label class="label" for="a-year">Schuljahr</label><select class="input select" id="a-year"></select></div>
-                </div>
-                <label class="check"><input type="checkbox" id="a-compulsory"> Pflichtschule abgeschlossen</label>
+        <label class="label" for="a-school">Welche Schule besuchst du gerade?</label>
+        <div class="combo">
+          <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+          <input class="input" id="a-school" type="text" role="combobox" aria-expanded="false" aria-controls="a-school-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Name, Ort oder Postleitzahl eingeben" data-required data-combo="a" aria-required="true" aria-describedby="a-school-hint">
+          <ul class="combo-list" id="a-school-list" role="listbox" aria-label="Schulen" hidden></ul>
+        </div>
+        <p class="hint" id="a-school-hint">Tipp: Such nach dem Namen, dem Ort oder der Postleitzahl und wähl deine Schule aus der Liste.</p>
+        <p class="sr-only" id="a-school-status" aria-live="polite"></p>
+        <p class="error" id="a-school-err" hidden></p>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label class="label" for="a-branch">Zweig</label>
+          <select class="input select" id="a-branch" data-required data-msg="Bitte wähle deinen Zweig aus." disabled></select>
+          <p class="hint" id="a-branch-hint" hidden></p>
+          <p class="error" id="a-branch-err" hidden></p>
+        </div>
+        <div class="field">
+          <label class="label" for="a-level">Schulstufe</label>
+          <select class="input select" id="a-level" data-required data-msg="Bitte wähle deine Schulstufe aus." disabled></select>
+          <p class="hint" id="a-level-hint" aria-live="polite"></p>
+          <p class="error" id="a-level-err" hidden></p>
+        </div>
+      </div>
+      <div class="school-card" id="a-school-card" hidden></div>
+                <label class="check"><input type="checkbox" id="a-compulsory" aria-describedby="a-compulsory-hint" disabled> Pflichtschule abgeschlossen</label>
+                <p class="hint" id="a-compulsory-hint"></p>
                 <div class="field reveal" id="a-degree-wrap">
                   <label class="label" for="a-degree">Höchster Abschluss</label>
                   <select class="input select" id="a-degree"></select>
@@ -973,6 +972,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"><svg class="i"><use href="#i-check"/></svg><span id="toast-text"></span></div>
 
+<script src="dummySchulen-fallback.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="script.js"></script>

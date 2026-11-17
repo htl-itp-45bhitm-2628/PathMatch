@@ -49,8 +49,8 @@
     <div class="wrap header-row">
       <a class="logo" href="#start" data-go="start" aria-label="PathMatch Startseite"><span class="logo-img logo-img--inverse" aria-hidden="true"></span></a>
       <div class="header-actions">
-        <button type="button" class="btn btn-ghost-inverse" data-open-login>Anmelden</button>
-        <button type="button" class="btn btn-secondary" data-go="signup-account">Konto erstellen</button>
+        <button type="button" class="btn btn-ghost-inverse mobile-login" data-open-login>Anmelden</button>
+        <button type="button" class="btn btn-secondary desktop-signup" data-go="signup-account">Konto erstellen</button>
       </div>
     </div>
   </header>
@@ -63,7 +63,7 @@
       <div class="hero-copy">
         <p class="eyebrow">Für Schülerinnen und Schüler in Österreich</p>
         <h1 class="display" tabindex="-1">Finde deinen nächsten <em>Schritt</em> nach der Schule.</h1>
-        <p class="lead">Gib an, was du kannst und was dich interessiert. PathMatch zeigt dir passende Studien, Lehrstellen, Praktika und Jobs und erklärt dir, warum sie zu dir passen.</p>
+        <p class="lead mobile-hide">Gib an, was du kannst und was dich interessiert. PathMatch zeigt dir passende Studien, Lehrstellen, Praktika und Jobs und erklärt dir, warum sie zu dir passen.</p>
         <div class="hero-cta">
           <button type="button" class="btn btn-secondary btn-lg" data-go="signup-account">Jetzt starten <svg class="i i-arrow"><use href="#i-arrow-right"/></svg></button>
           <button type="button" class="btn btn-link btn-link--inverse" data-open-login>Ich habe schon ein Konto</button>
@@ -287,7 +287,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Leg dein <em>Konto</em> an.</h1>
-        <p class="sub">Mit deiner E-Mail-Adresse und deinem Passwort meldest du dich später an.</p>
+        <p class="sub"><span class="text-desktop">Mit deiner E-Mail-Adresse und deinem Passwort meldest du dich später an.</span><span class="text-mobile">E-Mail und Passwort brauchst du für deine Anmeldung.</span></p>
       </div>
       <div class="fieldset">
         <div class="field">
@@ -340,7 +340,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Deine aktuelle <em>Schule</em>.</h1>
-        <p class="sub">Such deine Schule und wähl deinen Zweig und deine Schulstufe aus. Damit wissen wir, wo du gerade stehst und welche Themen für dich passen.</p>
+        <p class="sub"><span class="text-desktop">Such deine Schule und wähl deinen Zweig und deine Schulstufe aus. Damit wissen wir, wo du gerade stehst und welche Themen für dich passen.</span><span class="text-mobile">Wähle deine Schule, deinen Zweig und deine Schulstufe.</span></p>
       </div>
       <div class="field">
         <label class="label" for="f-school">Welche Schule besuchst du gerade?<span class="req" aria-hidden="true">*</span></label>
@@ -380,7 +380,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Dein bisheriger <em>Abschluss</em>.</h1>
-        <p class="sub">Die Pflichtschule dauert 9 Schuljahre. Ob du sie schon abgeschlossen hast, haben wir aus deiner Schulstufe abgeleitet.</p>
+        <p class="sub"><span class="text-desktop">Die Pflichtschule dauert 9 Schuljahre. Ob du sie schon abgeschlossen hast, haben wir aus deiner Schulstufe abgeleitet.</span><span class="text-mobile">Wir haben aus deiner Schulstufe abgeleitet, ob du die Pflichtschule abgeschlossen hast.</span></p>
       </div>
       <div class="fieldset">
         <label class="check check-card"><input type="checkbox" id="f-compulsory" aria-describedby="f-compulsory-hint" disabled> Pflichtschule abgeschlossen</label>
@@ -401,7 +401,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Was möchtest du <em>nach der Schule</em> machen?</h1>
-        <p class="sub">Wähle aus, was am ehesten passt. Wenn du dir noch nicht sicher bist, ist das völlig in Ordnung.</p>
+        <p class="sub"><span class="text-desktop">Wähle aus, was am ehesten passt. Wenn du dir noch nicht sicher bist, ist das völlig in Ordnung.</span><span class="text-mobile">Wähle, was am ehesten passt – du kannst auch noch unentschieden sein.</span></p>
       </div>
       <fieldset class="fieldset">
         <legend class="sr-only">Dein Ziel nach der Schule</legend>
@@ -441,7 +441,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Was sind deine <em>Interessen</em> und Kenntnisse?</h1>
-        <p class="sub">Wähle ein Themengebiet und markiere, womit du schon gearbeitet hast. Du kannst mehrere Themengebiete durchgehen.</p>
+        <p class="sub"><span class="text-desktop">Wähle ein Themengebiet und markiere, womit du schon gearbeitet hast. Du kannst mehrere Themengebiete durchgehen.</span><span class="text-mobile">Wähle ein Thema und markiere, womit du schon gearbeitet hast. Du kannst weitere Themen ansehen.</span></p>
       </div>
       <div class="topic-row">
         <label class="label" for="f-topic">Themengebiet</label>
@@ -486,7 +486,7 @@
       <div class="form-head">
         <p class="eyebrow" data-eyebrow></p>
         <h1 class="h1" tabindex="-1">Was <em>interessiert</em> dich sonst noch?</h1>
-        <p class="sub">Beschreib in eigenen Worten, was dir Spaß macht oder was du später gern machen würdest.</p>
+        <p class="sub"><span class="text-desktop">Beschreib in eigenen Worten, was dir Spaß macht oder was du später gern machen würdest.</span><span class="text-mobile">Erzähl kurz, was dir Spaß macht oder was du später machen möchtest.</span></p>
       </div>
       <div class="field">
         <label class="label" for="f-interests">Deine Interessen</label>
@@ -535,15 +535,20 @@
       <a class="logo" href="#results" data-go="results" aria-label="PathMatch, zu den Ergebnissen"><span class="logo-img logo-img--inverse" aria-hidden="true"></span></a>
       <nav class="app-nav" aria-label="Hauptnavigation">
         <span class="nav-ind" aria-hidden="true"></span>
-        <button type="button" class="nav-btn" data-go="results" data-nav="results"><svg class="i"><use href="#i-list"/></svg>Ergebnisse</button>
-        <button type="button" class="nav-btn" data-go="favorites" data-nav="favorites"><svg class="i"><use href="#i-heart"/></svg>Favoriten <span class="badge" id="fav-badge">0</span></button>
+        <button type="button" class="nav-btn" data-go="results" data-nav="results" aria-label="Ergebnisse"><svg class="i"><use href="#i-list"/></svg><span class="nav-label">Ergebnisse</span></button>
+        <button type="button" class="nav-btn" data-go="favorites" data-nav="favorites" aria-label="Favoriten"><svg class="i"><use href="#i-heart"/></svg><span class="nav-label">Favoriten</span><span class="badge" id="fav-badge">0</span></button>
       </nav>
       <div class="user">
-        <button type="button" class="user-btn" data-go="account" data-nav="account" aria-label="Dein Konto öffnen">
-          <span class="user-name"><strong id="user-fullname">Lena Hofer</strong><span id="user-school">HTL Leonding</span></span>
-          <span class="avatar" id="user-avatar" aria-hidden="true">LH</span>
-        </button>
-        <button type="button" class="icon-btn icon-btn--plain" data-logout aria-label="Abmelden" title="Abmelden"><svg class="i"><use href="#i-logout"/></svg></button>
+        <div class="account-menu-wrap" id="mobile-account">
+          <button type="button" class="user-btn" id="account-menu-toggle" data-nav="account" aria-label="Profilmenü öffnen" aria-haspopup="menu" aria-expanded="false" aria-controls="mobile-account-menu">
+            <span class="user-name"><strong id="user-fullname">Lena Hofer</strong><span id="user-school">HTL Leonding</span></span>
+            <span class="avatar" id="user-avatar" aria-hidden="true">LH</span>
+          </button>
+          <div class="mobile-account-menu" id="mobile-account-menu" role="menu" aria-label="Profilmenü" hidden>
+            <button type="button" class="mobile-account-action" role="menuitem" data-go="account">Mein Konto</button>
+            <button type="button" class="mobile-account-action" role="menuitem" data-logout>Abmelden</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -551,8 +556,10 @@
   <main>
     <!-- Ergebnisse -->
     <section data-view="results">
+      <div class="mobile-filter-tools"><button type="button" class="btn btn-secondary" id="mobile-filter-open" aria-haspopup="dialog">Filter <svg class="i"><use href="#i-sliders"/></svg></button></div>
+      <div class="filter-backdrop" id="filter-backdrop" hidden></div>
       <div class="results-layout">
-        <aside class="filter-rail" id="filter-rail" aria-label="Filter und Angaben">
+        <aside class="filter-rail" id="filter-rail" aria-label="Filter und Angaben" aria-labelledby="mobile-filter-title">
           <button type="button" class="pane-handle rail-handle" data-rail-toggle aria-expanded="true" aria-controls="rail-inner" title="Filter ausklappen">
             <span class="handle-btn"><svg class="i"><use href="#i-chevron-right"/></svg></span>
             <span class="handle-label">Filter</span>
@@ -560,7 +567,8 @@
           </button>
           <div class="rail-inner" id="rail-inner">
           <div class="rail-head">
-            <p class="rail-title">Filter</p>
+            <p class="rail-title" id="mobile-filter-title">Filter</p>
+            <button type="button" class="mobile-filter-close" id="mobile-filter-close" aria-label="Filter schließen"><svg class="i"><use href="#i-x"/></svg></button>
             <button type="button" class="panel-toggle panel-toggle--dark" data-rail-toggle title="Filterleiste einklappen"><svg class="i"><use href="#i-chevron-left"/></svg>Einklappen</button>
           </div>
           <ol class="stepper filter-steps">

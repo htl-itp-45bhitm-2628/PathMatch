@@ -436,6 +436,7 @@
       if (el.dataset.nav === name) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
     });
     $('#shell-app').classList.toggle('is-full', name === 'results' || name === 'favorites');
+    $('#shell-app').classList.toggle('is-account', name === 'account');
     if (isApp) moveNavInd();
     if (name === 'start') { buildStomps(); initHow(); }
 
@@ -455,14 +456,22 @@
     }
   }
 
+  function closeMobileAccount(restoreFocus) { var menu = $('#mobile-account-menu'), btn = $('#account-menu-toggle'), wasOpen = menu && !menu.hidden; if (wasOpen) menu.hidden = true; if (btn) { btn.setAttribute('aria-expanded', 'false'); if (restoreFocus && wasOpen) btn.focus(); } }
+  function toggleMobileAccount() { var menu = $('#mobile-account-menu'), btn = $('#account-menu-toggle'); if (!menu || !btn) return; menu.hidden = !menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); }
+  function openMobileFilter() { document.body.classList.add('mobile-filter-open'); $('#filter-backdrop').hidden = false; $('#filter-rail').setAttribute('role', 'dialog'); $('#filter-rail').setAttribute('aria-modal', 'true'); $('#mobile-filter-close').focus(); }
+  function closeMobileFilter() { document.body.classList.remove('mobile-filter-open'); var back = $('#filter-backdrop'); if (back) back.hidden = true; var rail = $('#filter-rail'); if (rail) { rail.removeAttribute('role'); rail.removeAttribute('aria-modal'); } var opener = $('#mobile-filter-open'); if (opener && document.activeElement === $('#mobile-filter-close')) opener.focus(); }
   document.addEventListener('click', function (e) {
+    if (!e.target.closest('#mobile-account')) closeMobileAccount();
     var closer = e.target.closest('[data-close]');
     if (closer) { var m = closer.closest('.modal'); if (m) closeModal(m); }
     var link = e.target.closest('[data-go]');
-    if (link) { e.preventDefault(); go(link.dataset.go); return; }
+    if (link) { e.preventDefault(); closeMobileAccount(); closeMobileFilter(); go(link.dataset.go); return; }
     if (e.target.closest('[data-open-login]')) { showLoginView(); openModal('modal-login'); }
     if (e.target.closest('[data-reset-filters]')) resetFilters();
-    if (e.target.closest('[data-logout]')) { go('start'); toast('Du hast dich abgemeldet.'); }
+    if (e.target.closest('[data-logout]')) { closeMobileAccount(); closeMobileFilter(); go('start'); toast('Du hast dich abgemeldet.'); }
+    if (e.target.closest('#account-menu-toggle')) { e.preventDefault(); toggleMobileAccount(); }
+    if (e.target.closest('#mobile-filter-open')) { openMobileFilter(); }
+    if (e.target.closest('#mobile-filter-close') || e.target.closest('#filter-backdrop')) { closeMobileFilter(); }
   });
 
   /* ---------- Registrierung: Unterseiten ---------- */
@@ -532,7 +541,7 @@
       }
       return '<li class="' + status + '"' + (status === 'is-current' && g.steps.length === 1 ? ' aria-current="step"' : '') + '>' +
         '<span class="step-dot">' + dot + '</span>' +
-        '<span class="step-text"><span class="step-name">' + esc(g.name) + '</span>' +
+        '<span class="step-text"><span class="step-name step-name-desktop">' + esc(g.name) + '</span><span class="step-name step-name-mobile">' + esc(['Profil', 'Ziel', 'Skills'][gi] || 'Skills') + '</span>' +
         (subs || (g.desc ? '<span class="step-desc">' + esc(g.desc) + '</span>' : '')) + '</span></li>';
     }).join('');
   }
@@ -1810,6 +1819,7 @@
     m.addEventListener('mousedown', function (e) { if (e.target === m) closeModal(m); });
   });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeMobileAccount(true); closeMobileFilter(); }
     var open = $$('.modal').filter(function (m) { return !m.hidden; }).pop();
     if (e.key === 'Escape') {
       if (open) { closeModal(open); return; }

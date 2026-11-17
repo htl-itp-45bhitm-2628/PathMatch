@@ -137,10 +137,13 @@
   var OFFER_BY_ID = {};
   OFFERS.forEach(function (o) { OFFER_BY_ID[o.id] = o; });
 
-  /* ---------- Schulen (kommen aus dummySchulen.xml) ---------- */
-  var SCHOOLS_URL = 'dummySchulen.xml';
+  /* ---------- Schulen (kommen aus einer XML-Datei im Ordner data) ---------- */
+  // Welche Liste der Prototyp nutzt: data/schulen_ooe.xml (echte Daten) oder data/dummySchulen.xml (Beispieldaten).
+  // Nach dem Umstellen einmal `python3 tools/sync-fallback.py` ausführen (siehe README).
+  var SCHOOLS_URL = 'data/schulen_ooe.xml';
   // Vorausgewählte Schule der Beispiel-Schülerin (SKZ, Name des Zweigs, Schulstufe)
-  var DEFAULT_PICK = { skz: '401901', branch: 'Informatik', stufe: 13 };
+  // (HTL Leonding in schulen_ooe.xml. Für dummySchulen.xml: skz '401901', branch 'Informatik'.)
+  var DEFAULT_PICK = { skz: '410427', branch: 'Informatik – Smart Cyber Systems', stufe: 13 };
   // Falls die Schulliste nicht geladen werden kann, gelten diese Werte
   var PROFILE_FALLBACK = { school: 'HTL Leonding', skz: '', schoolType: '', branch: 'Informatik', level: '13. Schulstufe', stufe: 13, year: '5. Jahrgang', topics: ['prog', 'tech'], compulsory: true, degree: 'Pflichtschulabschluss' };
   var COMPULSORY_YEARS = 9;   // Schulpflicht in Österreich: 9 Schuljahre
@@ -150,13 +153,15 @@
   // Reihenfolge zählt: der erste Treffer im Schultyp gewinnt.
   var STUFEN_BY_TYPE = [
     ['volksschule', 1, 4],
+    ['sonderschule', 1, 9],
     ['polytechnisch', 9, 9],
     ['berufsschule', 10, 13],
     ['mittelschule', 5, 8], ['hauptschule', 5, 8],
     ['oberstufenrealgymnasium', 9, 12], ['borg', 9, 12],
     ['allgemeinbildende', 5, 12], ['gymnasium', 5, 12], ['ahs', 5, 12],
     ['handelsschule', 9, 11], ['fachschule', 9, 11], ['mittlere', 9, 11],
-    ['höhere', 9, 13], ['handelsakademie', 9, 13], ['bildungsanstalt', 9, 13], ['htl', 9, 13], ['hak', 9, 13]
+    ['höhere', 9, 13], ['handelsakademie', 9, 13], ['bildungsanstalt', 9, 13], ['htl', 9, 13], ['hak', 9, 13],
+    ['humanberufliche', 9, 13], ['technische', 9, 13], ['kaufmännische', 9, 13], ['lehrerbildende', 9, 13], ['land- und forstwirtschaftliche', 9, 13]
   ];
   var STUFEN_FALLBACK = [5, 13];
 
@@ -188,10 +193,22 @@
     return k ? k.textContent.replace(/\s+/g, ' ').trim() : '';
   }
 
+  // Offizielle Schulnamen sind lang. Damit man auch mit den gängigen Abkürzungen findet (z. B. "HAK Wels"),
+  // hängen wir sie an den Suchtext an.
+  var SEARCH_ABBREVIATIONS = [
+    [/handelsakademie/, 'hak'], [/handelsschule/, 'has'], [/technische bundeslehranstalt|hohere technische/, 'htl'],
+    [/oberstufenrealgymnasium/, 'borg'], [/realgymnasium/, 'brg'], [/wirtschaftliche berufe/, 'hlw'],
+    [/elementarpadagogik/, 'bafep'], [/polytechnische/, 'pts']
+  ];
+  function searchAbbreviations(text) {
+    var t = norm(text);
+    return SEARCH_ABBREVIATIONS.filter(function (a) { return a[0].test(t); }).map(function (a) { return a[1]; }).join(' ');
+  }
+
   function parseSchools(xmlText) {
     var doc = new DOMParser().parseFromString(xmlText, 'application/xml');
     var bad = doc.getElementsByTagName('parsererror')[0];
-    if (bad) throw new Error('dummySchulen.xml ist kein gültiges XML: ' + bad.textContent.trim().split('\n')[0]);
+    if (bad) throw new Error('Die Schulliste ist kein gültiges XML: ' + bad.textContent.trim().split('\n')[0]);
     var list = [], seen = {};
     Array.prototype.forEach.call(doc.getElementsByTagName('Schuldaten'), function (el, i) {
       var name = kidText(el, 'Schule');
@@ -221,26 +238,26 @@
         street: kidText(el, 'Straße'), zip: kidText(el, 'PLZ'), city: kidText(el, 'Ort'),
         phone: kidText(el, 'Telefon'), email: kidText(el, 'E-Mail'), web: kidText(el, 'Webseite')
       };
-      school.hay = norm([name, type, school.zip, school.city].join(' '));
+      school.hay = norm([name, type, school.zip, school.city].join(' ')) + ' ' + searchAbbreviations(name + ' ' + type);
       school.nameN = norm(name);
       list.push(school);
     });
-    if (!list.length) throw new Error('In dummySchulen.xml wurde keine Schule gefunden (erwartet: <Schulen><Schuldaten>…).');
+    if (!list.length) throw new Error('In der Schulliste wurde keine Schule gefunden (erwartet: <Schulen><Schuldaten>…).');
     list.sort(function (a, b) { return a.name.localeCompare(b.name, 'de'); });
     return list;
   }
 
-  // Lädt dummySchulen.xml. Beim Öffnen per Doppelklick (file://) verbietet der Browser fetch();
-  // dann gilt die eingebettete Kopie aus dummySchulen-fallback.js (erzeugt mit tools/sync-fallback.py).
+  // Lädt die Schulliste (SCHOOLS_URL). Beim Öffnen per Doppelklick (file://) verbietet der Browser fetch();
+  // dann gilt die eingebettete Kopie aus data/schulen-fallback.js (erzeugt mit tools/sync-fallback.py).
   function loadSchools() {
     return fetch(SCHOOLS_URL, { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
       .then(function (text) { return { text: text, source: 'xml' }; }, function (err) {
         if (window.PATHMATCH_SCHULEN_XML) {
-          if (window.console) console.warn('PathMatch: dummySchulen.xml konnte nicht geladen werden (' + err.message + '). Es wird die eingebettete Kopie aus dummySchulen-fallback.js genutzt. Für die echte Datei den Prototyp über einen lokalen Server öffnen.');
+          if (window.console) console.warn('PathMatch: ' + SCHOOLS_URL + ' konnte nicht geladen werden (' + err.message + '). Es wird die eingebettete Kopie aus data/schulen-fallback.js genutzt. Für die echte Datei den Prototyp über einen lokalen Server öffnen.');
           return { text: window.PATHMATCH_SCHULEN_XML, source: 'fallback' };
         }
-        throw new Error('dummySchulen.xml konnte nicht geladen werden (' + err.message + ').');
+        throw new Error(SCHOOLS_URL + ' konnte nicht geladen werden (' + err.message + ').');
       })
       .then(function (res) {
         SCHOOLS = parseSchools(res.text);
@@ -275,7 +292,7 @@
     if (!school || !stufe) return '';
     var r = stufeRange(school, zweig), n = stufe - r[0] + 1, t = school.type.toLowerCase();
     var unit = t.indexOf('berufsschule') > -1 ? 'Lehrjahr'
-      : (t.indexOf('oberstufenreal') === -1 && /volksschule|mittelschule|hauptschule|polytechn|allgemeinbildende|gymnasium/.test(t)) ? 'Klasse'
+      : (t.indexOf('oberstufenreal') === -1 && /volksschule|sonderschule|mittelschule|hauptschule|polytechn|allgemeinbildende|gymnasium|^ahs$/.test(t)) ? 'Klasse'
       : 'Jahrgang';
     return n + '. ' + unit;
   }
@@ -889,7 +906,7 @@
   var topicSelect = $('#f-topic');
   topicSelect.addEventListener('change', function () { state.topic = topicSelect.value; renderChips(); });
 
-  // Themengebiete, die zum Zweig der Schule gehören (kommen aus dummySchulen.xml)
+  // Themengebiete, die zum Zweig der Schule gehören (kommen aus der Schulliste)
   function suggestedTopics() {
     return (state.profile.topics || []).filter(function (k) { return has(TOPICS, k); });
   }

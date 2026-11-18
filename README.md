@@ -13,6 +13,7 @@
 ---
 
 **Team**: *Laurent Mc Neall, David Lachner, Julian Forster*
-Zeiterfassung: https://htblaleonding-my.sharepoint.com/:x:/g/personal/l_mc_neall_htblaleonding_onmicrosoft_com/IQBwyAanVN8nR542qF8VgkQaAeqrIfEHqCawag2w8bmCQHs?e=sllXmj
 
+<p> Zeiterfassung: https://htblaleonding-my.sharepoint.com/:x:/g/personal/l_mc_neall_htblaleonding_onmicrosoft_com/IQBwyAanVN8nR542qF8VgkQaAeqrIfEHqCawag2w8bmCQHs?e=sllXmj
+</p>
 > HTL Leonding, 2026 ©

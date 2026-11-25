@@ -1,0 +1,93 @@
+# PathMatch: lokale Entwicklungsumgebung
+#
+#   ./start-containers.sh         startet Datenbank, phpMyAdmin und Frontend
+#   ./start-containers.sh full    startet zusätzlich das Quarkus-Backend als Container
+#   ./shutdown-containers.sh      stoppt alles
+#
+# Frontend:    http://localhost:3000      (liefert den Ordner ./frontend aus, Änderungen sind sofort sichtbar)
+# Backend:     http://localhost:8080      (nur mit "full", oder lokal mit `quarkus dev`)
+# phpMyAdmin:  http://localhost:8081      (Login: root / Passwort aus .env, Standard: rootpassword)
+# MySQL:       localhost:3306             (Datenbank: pathmatch, Benutzer: pathmatch)
+#              Im Docker-Netzwerk heißt der Server "db_server".
+#
+# Zugangsdaten stehen in der Datei .env (Vorlage: .env.example). Ohne .env gelten die Standardwerte unten.
+
+services:
+  db_server:
+    image: mysql:8.4
+    container_name: pathmatch-db
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pathmatch}
+      MYSQL_USER: ${MYSQL_USER:-pathmatch}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pathmatch}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Beim ersten Start (leeres Volume) führt init.sh alle .sql-Dateien aus database/schema und danach database/seed aus.
+      - ./docker/mysql/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+      - ./database/schema:/sql/schema:ro
+      - ./database/seed:/sql/seed:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - pathmatch_network
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: pathmatch-phpmyadmin
+    environment:
+      PMA_HOST: db_server
+    ports:
+      - "8081:80"
+    depends_on:
+      db_server:
+        condition: service_healthy
+    networks:
+      - pathmatch_network
+
+  frontend:
+    image: nginx:alpine
+    container_name: pathmatch-frontend
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "3000:80"
+    networks:
+      - pathmatch_network
+
+  # Quarkus-Backend als Container. Läuft nur mit "full" (./start-containers.sh full), weil das Projekt
+  # beim Entwickeln meist lokal mit `quarkus dev` läuft (Live-Reload).
+  backend:
+    profiles: ["full"]
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: pathmatch-backend
+    environment:
+      # Quarkus liest diese Umgebungsvariablen und überschreibt damit application.properties
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:mysql://db_server:3306/${MYSQL_DATABASE:-pathmatch}
+      QUARKUS_DATASOURCE_USERNAME: ${MYSQL_USER:-pathmatch}
+      QUARKUS_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-pathmatch}
+      # Java-Debugger (statt Xdebug): in der IDE per "Remote JVM Debug" auf Port 5005 verbinden
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    depends_on:
+      db_server:
+        condition: service_healthy
+    networks:
+      - pathmatch_network
+
+volumes:
+  db_data:
+
+networks:
+  pathmatch_network:

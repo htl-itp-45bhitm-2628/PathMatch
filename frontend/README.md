@@ -1,4 +1,7 @@
-# PathMatch Click-Dummy
+# Frontend (HTML, CSS, JS)
+
+Die Web-App von PathMatch. Aktuell ist das der Click-Dummy-Prototyp (reines HTML, CSS und JS, ohne Backend).
+Später spricht das Frontend per `fetch()` mit der REST-API des Quarkus-Backends (`../backend`).
 
 ## Schulliste (Ordner `data`)
 

@@ -1,0 +1,6 @@
+# Gilt nur für docker/backend/Dockerfile. Das von Quarkus erzeugte backend/.dockerignore
+# schließt src/ und pom.xml aus, die dieses Dockerfile aber braucht, darum die eigene Datei.
+target/
+.idea/
+.vscode/
+*.iml
